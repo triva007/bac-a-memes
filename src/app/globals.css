@@ -1,26 +1,173 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * CHARTE — Bac à Mèmes : "cahier d'école + surligneurs fluo"
+ * Fond encre nuit, cartes papier crème, bordures encre épaisses,
+ * ombres dures décalées (effet autocollant), accents surligneur.
+ */
+@theme {
+  --color-ink: #14132b;
+  --color-ink-2: #1e1d40;
+  --color-ink-3: #2c2a5a;
+  --color-paper: #fbf7ec;
+  --color-paper-2: #f1ead6;
+  --color-rule: #b9d4f0;
+  --color-margin: #f28b82;
+  --color-fluo-yellow: #ffe94a;
+  --color-fluo-pink: #ff5fa2;
+  --color-fluo-green: #5df2a0;
+  --color-fluo-blue: #5cc8ff;
+  --color-fluo-orange: #ff9a3d;
+  --color-violet: #7b5cff;
+  --color-red-pen: #e5383b;
+  --color-muted: #8f8db3;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-display: "Bricolage Grotesque Variable", "Arial Black", system-ui, sans-serif;
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: "Caveat Variable", "Patrick Hand", "Comic Sans MS", cursive;
+  --font-hand-2: "Patrick Hand", "Caveat Variable", cursive;
+  --font-meme: "Anton", Impact, "Arial Narrow Bold", sans-serif;
+  --font-type: "Special Elite", "Courier New", monospace;
+  --font-news: "Playfair Display", Georgia, serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --shadow-hard: 4px 4px 0 0 var(--color-ink);
+  --shadow-hard-lg: 7px 7px 0 0 var(--color-ink);
+  --shadow-hard-light: 4px 4px 0 0 rgba(0, 0, 0, 0.55);
+
+  --radius-card: 18px;
+
+  --animate-pop: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  --animate-wiggle: wiggle 0.5s ease-in-out both;
+  --animate-float: float 4s ease-in-out infinite;
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-4deg); }
+    75% { transform: rotate(4deg); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+    50% { transform: translateY(-10px) rotate(var(--tilt, 0deg)); }
   }
 }
 
+html {
+  background: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* Fond d'app : petits carreaux discrets sur encre nuit */
+.bg-grid {
+  background-color: var(--color-ink);
+  background-image:
+    linear-gradient(rgba(185, 212, 240, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 212, 240, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Papier Seyès (grands carreaux français) pour les cartes "cahier" */
+.paper-seyes {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(90deg, transparent 43px, var(--color-margin) 43px, var(--color-margin) 45px, transparent 45px),
+    linear-gradient(rgba(185, 212, 240, 0.9) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 212, 240, 0.45) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 24px, 24px 100%;
+}
+
+/* Carte autocollant */
+.card {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 3px solid var(--color-ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-hard-light);
+}
+
+/* Bouton principal : fluo, bord encre, s'enfonce au clic */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px;
+  padding: 0.7rem 1.3rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  color: var(--color-ink);
+  background: var(--color-fluo-yellow);
+  border: 3px solid var(--color-ink);
+  border-radius: 16px;
+  box-shadow: var(--shadow-hard-light);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+.btn:hover { filter: brightness(1.05); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.55); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn:focus-visible { outline: 3px solid var(--color-fluo-blue); outline-offset: 3px; }
+.btn-pink { background: var(--color-fluo-pink); }
+.btn-green { background: var(--color-fluo-green); }
+.btn-blue { background: var(--color-fluo-blue); }
+.btn-paper { background: var(--color-paper); }
+.btn-ghost {
+  background: transparent;
+  color: var(--color-paper);
+  border-color: rgba(251, 247, 236, 0.35);
+  box-shadow: none;
+}
+.btn-sm { min-height: 40px; padding: 0.4rem 0.85rem; font-size: 0.9rem; border-radius: 12px; border-width: 2px; }
+
+/* Champ de saisie */
+.field {
+  width: 100%;
+  min-height: 52px;
+  padding: 0.7rem 0.9rem;
+  /* 16px mini : évite le zoom automatique d'iOS au focus */
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  background: #fff;
+  border: 3px solid var(--color-ink);
+  border-radius: 14px;
+  outline: none;
+}
+.field::placeholder { color: #9a98b5; font-weight: 500; }
+.field:focus-visible { box-shadow: 0 0 0 4px var(--color-fluo-blue); }
+
+/* Effet surligneur sur un mot */
+.hl {
+  background: linear-gradient(transparent 55%, var(--hl, var(--color-fluo-yellow)) 55%);
+  padding: 0 0.15em;
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* Barre de défilement discrète */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
