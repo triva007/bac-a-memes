@@ -14,7 +14,7 @@
 
 /** Sticker posé par-dessus le mème. Coordonnées relatives au canevas. */
 export interface Sticker {
-  /** id d'emoji (nom de fichier sans extension dans /public/emoji) */
+  /** id d'emoji (nom de fichier sans extension dans /public/emoji, ex. "skull" -> /emoji/skull.webp) */
   e: string;
   /** centre, 0..1 (fraction de la largeur / hauteur du canevas) */
   x: number;

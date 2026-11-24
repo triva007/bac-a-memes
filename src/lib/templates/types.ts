@@ -11,7 +11,7 @@
  *    (le serveur importe le registre pour lire ids/champs). Tout ce qui a
  *    besoin de hooks vit dans le kit (`src/components/meme/kit.tsx`).
  *  - Dessiner uniquement en px dans le canevas virtuel (pas de vw/vh/rem).
- *  - Images : uniquement /emoji/*.png (Fluent Emoji 3D, licence MIT) et
+ *  - Images : uniquement /emoji/*.webp (Fluent Emoji 3D, licence MIT) et
  *    du SVG/CSS original. Aucune image de mème connue, aucune marque.
  */
 import type { ComponentType } from "react";

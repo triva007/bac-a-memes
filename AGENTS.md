@@ -16,7 +16,7 @@ Jeu ORIGINAL : aucun nom, image, personnage ou habillage repris d'un jeu ou d'un
 - Contrats partagés (ne pas modifier sans accord) : `src/lib/game/types.ts`, `src/lib/templates/types.ts`.
 - Charte graphique : `src/app/globals.css` (tokens Tailwind v4 `@theme`, classes `.card`, `.btn`, `.field`, `.paper-seyes`, `.hl`).
   Polices déjà chargées dans `src/app/layout.tsx` via `@fontsource` (pas de `next/font/google` : pas d'accès réseau au build local).
-- Images : uniquement `/public/emoji/*.png` (Fluent Emoji 3D, MIT) + SVG/CSS originaux. Pas d'import de photos par les joueurs.
+- Images : uniquement `/public/emoji/*.webp` (Fluent Emoji 3D, MIT) + SVG/CSS originaux. Pas d'import de photos par les joueurs.
 - Tout le texte visible est en français, ton lycéen, drôle mais bon enfant (on charrie, on n'humilie pas).
 - Mobile d'abord (360 px de large), cibles tactiles ≥ 44 px, champs de saisie en 16 px mini.
 - Next.js 16 App Router, React 19, TypeScript strict, Tailwind v4. Lire `node_modules/next/dist/docs/` en cas de doute sur une API.
