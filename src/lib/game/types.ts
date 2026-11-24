@@ -35,6 +35,30 @@ export interface Meme {
 
 export const MAX_STICKERS = 6;
 
+// ---------------------------------------------------------------- Pack perso
+//
+// Les joueurs peuvent ajouter des images depuis leur téléphone (captures d'écran
+// des mèmes du moment). Elles deviennent des gabarits "perso" :
+//   templateId = "perso:<imageId>"   champs fixes : PERSO_FIELDS (haut / bas)
+// Catégorie de gabarit associée : "perso" (utilisable dans settings.categories).
+
+export interface CustomImage {
+  id: string;
+  /** dimensions en px de l'image stockée */
+  w: number;
+  h: number;
+  /** joueur qui l'a ajoutée */
+  by: string;
+  byName: string;
+}
+
+export const PERSO_PREFIX = "perso:";
+export const PERSO_CATEGORY = "perso";
+export const PERSO_FIELDS: { id: string; maxLength: number }[] = [
+  { id: "haut", maxLength: 90 },
+  { id: "bas", maxLength: 90 },
+];
+
 // ---------------------------------------------------------------- Réglages
 
 export type GameMode =
@@ -67,6 +91,8 @@ export interface Settings {
   extraNames: string[];
   /** stickers autorisés */
   stickers: boolean;
+  /** qui peut ajouter des images au "pack perso" de la salle */
+  uploads: "all" | "host" | "off";
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -74,13 +100,14 @@ export const DEFAULT_SETTINGS: Settings = {
   rounds: 3,
   createSeconds: 90,
   voteSeconds: 15,
-  handSize: 4,
+  handSize: 6,
   rerolls: 2,
   jokers: 1,
   categories: [],
   profs: [],
   extraNames: [],
   stickers: true,
+  uploads: "all",
 };
 
 export const LIMITS = {
@@ -95,6 +122,11 @@ export const LIMITS = {
   resultsSeconds: 20,
   /** un joueur est "déconnecté" s'il n'a pas pollé depuis ce délai */
   disconnectAfterMs: 12_000,
+  /** pack perso : images ajoutées par les joueurs */
+  maxImages: 60,
+  maxImagesPerPlayer: 10,
+  /** taille max d'une image une fois décodée (le client compresse avant envoi) */
+  maxImageBytes: 350_000,
   /** une salle inactive est supprimée après ce délai */
   roomTtlSeconds: 6 * 3600,
 } as const;
@@ -178,6 +210,8 @@ export interface RoomView {
   settings: Settings;
   hostId: string;
   players: PlayerView[];
+  /** pack perso de la salle */
+  images: CustomImage[];
 
   /** null pour un spectateur (écran de classe / TV) */
   me: null | {
@@ -246,8 +280,15 @@ export interface RoomView {
 // GET  /api/rooms/[code]?token=T&v=N    -> RoomView | UnchangedResponse   (token optionnel = spectateur)
 // POST /api/rooms/[code]                body: ActionRequest          -> ActionResponse
 //
+//
+// Pack perso (toutes phases ; droits selon settings.uploads ; suppression : hôte ou auteur) :
+// POST   /api/rooms/[code]/images            body: AddImageRequest   -> AddImageResponse
+// DELETE /api/rooms/[code]/images/[id]?token=T                       -> ActionResponse
+// GET    /api/rooms/[code]/images/[id]       -> l'image (binaire, cache immuable 1 an)
+//
 // Erreurs : HTTP 4xx + ApiError. Codes : "room_not_found" (404), "bad_token" (401),
-// "room_full", "game_started", "not_host", "bad_phase", "invalid" (400), "kicked" (403).
+// "room_full", "game_started", "not_host", "bad_phase", "invalid" (400), "kicked" (403),
+// "uploads_off", "too_many_images", "image_too_big" (413), "image_not_found" (404).
 
 export interface CreateRoomRequest {
   name: string;
@@ -259,6 +300,20 @@ export interface JoinResponse {
   playerId: string;
   /** secret du joueur, à conserver en localStorage et à renvoyer à chaque appel */
   token: string;
+  state: RoomView;
+}
+
+export interface AddImageRequest {
+  token: string;
+  /** data URL image/jpeg, image/webp ou image/png, compressée côté client (≈1000 px de large max) */
+  dataUrl: string;
+  w: number;
+  h: number;
+}
+
+export interface AddImageResponse {
+  ok: true;
+  image: CustomImage;
   state: RoomView;
 }
 
