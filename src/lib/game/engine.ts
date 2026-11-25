@@ -56,7 +56,7 @@ import {
 export type { ActionOutcome, EngineError, ErrorCode, JoinCredentials, RoomState } from "./state";
 
 /** l'hôte perd son rôle s'il n'a pas donné signe de vie depuis ce délai */
-export const HOST_TIMEOUT_MS = 30_000;
+export const HOST_TIMEOUT_MS = 45_000;
 /** la présence (lastSeen) n'est réécrite que si la valeur stockée est plus vieille que ça */
 export const PRESENCE_WRITE_MS = 4_000;
 /** retard maximal pour lequel une phase est datée depuis l'échéance de la précédente (au-delà : depuis maintenant) */
@@ -201,6 +201,7 @@ export function createRoom(params: CreateRoomParams): ActionOutcome {
     round: 0,
     settings: { ...DEFAULT_SETTINGS, categories: [], profs: [], extraNames: [] },
     hostId: host.id,
+    ownerId: host.id,
     players: [host],
     kicked: [],
     nextSeq: 2,
@@ -262,6 +263,11 @@ function presenceStale(d: RoomState, now: number): boolean {
  */
 function nextHost(d: RoomState, now: number): string | undefined {
   const host = findPlayer(d, d.hostId);
+  // le créateur de la salle reprend la main dès qu'il est de retour
+  if (d.ownerId && d.ownerId !== d.hostId) {
+    const owner = findPlayer(d, d.ownerId);
+    if (owner && !owner.left && owner.connected) return owner.id;
+  }
   if (host && !host.left && now - host.lastSeen <= HOST_TIMEOUT_MS) return undefined;
   let next = d.players.find((p) => !p.left && p.connected && p.id !== d.hostId);
   if (!next && (!host || host.left)) next = d.players.find((p) => !p.left && p.id !== d.hostId);

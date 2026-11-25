@@ -146,9 +146,11 @@ function Ceremony({
               >
                 {n === 1
                   ? "Seul en lice, premier d'office. Stratégie imparable."
-                  : champion.tied
-                    ? `Égalité au sommet ! ${podiumPhrase(1, seed)}`
-                    : `${champion.player.name} : ${lowerFirst(podiumPhrase(1, seed))}`}
+                  : champion.player.score === 0
+                    ? "Zéro point partout. Match nul, balle au centre."
+                    : champion.tied
+                      ? `Égalité au sommet ! ${podiumPhrase(1, seed)}`
+                      : `${champion.player.name} : ${lowerFirst(podiumPhrase(1, seed))}`}
               </motion.p>
             ) : (
               <motion.p
@@ -212,7 +214,7 @@ function Ceremony({
                     transition={{ type: "spring", stiffness: 320, damping: 13 }}
                   >
                     <Avatar avatar={r.player.avatar} color={r.player.color} size={size} style={{ boxShadow: "3px 3px 0 0 rgba(0,0,0,0.55)" }} />
-                    {r.rank === 1 ? (
+                    {r.rank === 1 && r.player.score > 0 ? (
                       <motion.span
                         className="absolute -left-2 -top-6"
                         initial={{ y: -30, opacity: 0, rotate: -50 }}
@@ -263,7 +265,7 @@ function Ceremony({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.15 }}
               >
-                {meOnPodium ? (
+                {meOnPodium && me.player.score > 0 ? (
                   <>
                     Toi, {ordinal(meOnPodium.rank)}
                     {meOnPodium.tied ? " ex æquo" : ""} :{" "}

@@ -76,6 +76,8 @@ export interface RoomState {
   round: number;
   settings: Settings;
   hostId: string;
+  /** créateur de la salle : il récupère le rôle d'hôte dès qu'il revient */
+  ownerId?: string;
   players: PlayerState[];
   /** jetons des joueurs expulsés */
   kicked: string[];

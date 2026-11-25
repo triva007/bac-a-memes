@@ -922,7 +922,7 @@ describe("kick, leave, hôte", () => {
     }
   });
 
-  it("transfert d'hôte : après 30 s de silence, le plus ancien joueur connecté devient hôte", () => {
+  it("transfert d'hôte : après un long silence, le plus ancien joueur connecté devient hôte", () => {
     const sim = new Sim({ players: 4 });
     sim.online.delete("p1");
     sim.wait(LIMITS.disconnectAfterMs + 2_000);
@@ -932,12 +932,12 @@ describe("kick, leave, hôte", () => {
     expect(view.hostId).toBe("p2");
     expect(view.me?.isHost).toBe(true);
     expect(view.players.filter((p) => p.isHost).map((p) => p.id)).toEqual(["p2"]);
-    // l'ancien hôte revient : il ne récupère pas le rôle
+    // le créateur de la salle revient : il récupère le rôle
     sim.online.add("p1");
     sim.wait(2_000);
-    expect(sim.view("p1")).toMatchObject({ hostId: "p2", me: { isHost: false } });
-    expect(sim.act("p1", { type: "start" })).toMatchObject({ ok: false, error: "not_host" });
-    sim.must("p2", { type: "start" });
+    expect(sim.view("p1")).toMatchObject({ hostId: "p1", me: { isHost: true } });
+    expect(sim.act("p2", { type: "start" })).toMatchObject({ ok: false, error: "not_host" });
+    sim.must("p1", { type: "start" });
     expect(sim.phase).toBe("create");
   });
 
