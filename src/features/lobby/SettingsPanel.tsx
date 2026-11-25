@@ -54,7 +54,7 @@ const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : 
 
 /** Durée maximale d'une partie (si personne ne valide en avance), en minutes. */
 function estimateMinutes(s: Settings, players: number): number {
-  const perRound = s.createSeconds + players * (s.voteSeconds + LIMITS.revealSeconds) + LIMITS.resultsSeconds;
+  const perRound = s.createSeconds + players * (s.voteSeconds + (players > 12 ? 3.5 : LIMITS.revealSeconds)) + LIMITS.resultsSeconds;
   return Math.max(1, Math.round((s.rounds * perRound) / 60));
 }
 

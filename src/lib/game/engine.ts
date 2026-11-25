@@ -385,7 +385,9 @@ function enterVote(d: RoomState, ctx: Ctx, at: number): void {
 function enterReveal(d: RoomState, ctx: Ctx, at: number): void {
   const m = currentMeme(d);
   if (m) m.closed = true;
-  setPhase(d, ctx, "reveal", at, LIMITS.revealSeconds * 1000);
+  // grands groupes : on raccourcit la révélation pour que le vote ne s'éternise pas
+  const many = (d.current?.queue.length ?? 0) > 12;
+  setPhase(d, ctx, "reveal", at, (many ? 3.5 : LIMITS.revealSeconds) * 1000);
 }
 
 /** Mème suivant (en sautant les mèmes retirés) ou classement de la manche. */
