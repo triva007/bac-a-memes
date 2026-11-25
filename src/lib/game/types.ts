@@ -163,6 +163,8 @@ export interface PlayerView {
   score: number;
   connected: boolean;
   isHost: boolean;
+  /** robot ajouté par l'hôte pour tester (toujours « connecté », joue tout seul) */
+  isBot: boolean;
   /** phase create : a validé son mème ; phase vote : a voté pour le mème courant */
   done: boolean;
 }
@@ -349,8 +351,12 @@ export type Action =
   | { type: "skip" }
   /** hôte, modération : retirer le mème en cours de vote (0 point, on passe au suivant) */
   | { type: "removeMeme"; memeId: string }
-  /** hôte, final -> lobby (on garde joueurs et réglages, scores remis à zéro) */
-  | { type: "again" };
+  /** hôte, final -> lobby (on garde joueurs, robots et réglages, scores remis à zéro) */
+  | { type: "again" }
+  /** hôte, lobby uniquement : ajoute `count` robots (1..12 par appel, dans la limite de LIMITS.maxPlayers). Non idempotent. */
+  | { type: "addBots"; count: number }
+  /** hôte, lobby uniquement : retire tous les robots */
+  | { type: "removeBots" };
 
 export type ActionRequest = Action & { token?: string };
 

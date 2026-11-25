@@ -14,6 +14,7 @@
  *   buildView   -> vue envoyée à un joueur (ou à un spectateur) : sans secret
  */
 import { computeAwards, memePoints } from "./awards";
+import { BOT_AVATARS, BOT_NAMES, botCreateDelay, botScore, botVoteDelay, buildBotMeme } from "./bots";
 import { buildPool, dealHands, dealSituations, persoTemplateId, pickForcedTemplate, pickTheme } from "./deal";
 import { deterministicHex, makeRng, shuffle } from "./rng";
 import {
@@ -63,6 +64,8 @@ export const PRESENCE_WRITE_MS = 4_000;
 export const MAX_CATCHUP_MS = 3_000;
 /** un "skip" est ignoré si la phase vient de commencer (anti double-envoi) */
 export const SKIP_GUARD_MS = 1_500;
+/** nombre maximal de robots ajoutés par appel à "addBots" */
+export const MAX_BOTS_PER_CALL = 12;
 /** cartes situation par joueur et par manche */
 export const SITUATIONS_PER_PLAYER = 3;
 
@@ -227,7 +230,7 @@ export type AuthResult =
 export function authenticate(room: RoomState, token: string | null | undefined): AuthResult {
   if (!token) return { kind: "unknown" };
   if (room.kicked.includes(token)) return { kind: "kicked" };
-  const p = room.players.find((x) => x.token === token);
+  const p = room.players.find((x) => !x.bot && x.token === token);
   if (!p) return { kind: "unknown" };
   return p.left ? { kind: "left", playerId: p.id } : { kind: "player", playerId: p.id };
 }
@@ -249,6 +252,7 @@ export function touchPresence(room: RoomState, playerId: string | null, now: num
 }
 
 function isConnectedAt(p: PlayerState, now: number): boolean {
+  if (p.bot) return !p.left; // un robot est toujours « connecté »
   return !p.left && now - p.lastSeen < LIMITS.disconnectAfterMs;
 }
 
@@ -269,8 +273,9 @@ function nextHost(d: RoomState, now: number): string | undefined {
     if (owner && !owner.left && owner.connected) return owner.id;
   }
   if (host && !host.left && now - host.lastSeen <= HOST_TIMEOUT_MS) return undefined;
-  let next = d.players.find((p) => !p.left && p.connected && p.id !== d.hostId);
-  if (!next && (!host || host.left)) next = d.players.find((p) => !p.left && p.id !== d.hostId);
+  // un robot n'est jamais hôte
+  let next = d.players.find((p) => !p.bot && !p.left && p.connected && p.id !== d.hostId);
+  if (!next && (!host || host.left)) next = d.players.find((p) => !p.bot && !p.left && p.id !== d.hostId);
   if (next) return next.id;
   if (!host && d.hostId !== "") return "";
   return undefined;
@@ -429,13 +434,15 @@ function afterResults(d: RoomState, ctx: Ctx, at: number): void {
 function startAfter(d: RoomState, now: number, deadline: number): number {
   if (now - deadline > MAX_CATCHUP_MS) return now;
   let lastActivity = -Infinity;
-  for (const p of d.players) if (!p.left && p.lastSeen > lastActivity) lastActivity = p.lastSeen;
+  for (const p of d.players) if (!p.bot && !p.left && p.lastSeen > lastActivity) lastActivity = p.lastSeen;
   if (lastActivity < deadline - LIMITS.disconnectAfterMs) return now;
   return deadline;
 }
 
 type Transition =
   | { kind: "toVote" | "toReveal" | "advance" | "afterResults"; at: number }
+  /** des robots ont une action due (valider leur mème, noter le mème courant) */
+  | { kind: "bots"; at: number }
   /** personne n'a interrogé le serveur pendant tout le vote : on le rejoue */
   | { kind: "restartVote"; at: number };
 
@@ -446,6 +453,7 @@ function nextTransition(d: RoomState, now: number): Transition | null {
   switch (d.phase) {
     case "create": {
       if (!cur || end === null) return null;
+      if (botsDue(d, now)) return { kind: "bots", at: now };
       if (now >= end) return { kind: "toVote", at: startAfter(d, now, end) };
       // tous les participants connectés ont validé
       let waiting = 0;
@@ -461,6 +469,7 @@ function nextTransition(d: RoomState, now: number): Transition | null {
       if (!cur || end === null) return null;
       const m = currentMeme(d);
       if (!m || m.removed) return { kind: "advance", at: now };
+      if (botsDue(d, now)) return { kind: "bots", at: now };
       if (now >= end) {
         if (now - end > LIMITS.disconnectAfterMs && Object.keys(m.votes).length === 0) return { kind: "restartVote", at: now };
         return { kind: "toReveal", at: startAfter(d, now, end) };
@@ -483,6 +492,78 @@ function nextTransition(d: RoomState, now: number): Transition | null {
   }
 }
 
+// ------------------------------------------------------------------ robots
+
+/** Les robots ne jouent que s'il y a au moins un humain connecté : pas de partie fantôme. */
+function humanConnected(d: RoomState): boolean {
+  return d.players.some((p) => !p.bot && !p.left && p.connected);
+}
+
+function botCreateRng(d: RoomState, botId: string): () => number {
+  return rng(d, d.round, botId, "bot-create");
+}
+
+function botVoteRng(d: RoomState, memeId: string, botId: string): () => number {
+  return rng(d, memeId, botId, "bot-vote");
+}
+
+/**
+ * Robots dont l'action est due à `now`. Les délais sont propres à chaque robot
+ * et comptés depuis `phaseStartedAt` : peu importe quand `tick` est appelé, le
+ * résultat est le même. Lecture seule.
+ */
+function dueBots(d: RoomState, now: number): PlayerState[] {
+  const cur = d.current;
+  if (!cur || (d.phase !== "create" && d.phase !== "vote")) return [];
+  if (!d.players.some((p) => p.bot && !p.left) || !humanConnected(d)) return [];
+  const elapsed = now - d.phaseStartedAt;
+  if (d.phase === "create") {
+    const createMs = d.settings.createSeconds * 1000;
+    return d.players.filter((p) => {
+      const rp = p.bot && !p.left ? cur.participants[p.id] : undefined;
+      if (!rp || rp.submitted) return false;
+      if (!cur.forcedTemplateId && !rp.hands.some((h) => h.length > 0)) return false;
+      return elapsed >= botCreateDelay(createMs, botCreateRng(d, p.id));
+    });
+  }
+  const m = currentMeme(d);
+  if (!m || m.removed || m.closed) return [];
+  const voteMs = d.settings.voteSeconds * 1000;
+  return d.players.filter(
+    (p) => p.bot && !p.left && p.id !== m.authorId && m.votes[p.id] === undefined && elapsed >= botVoteDelay(voteMs, botVoteRng(d, m.id, p.id)),
+  );
+}
+
+function botsDue(d: RoomState, now: number): boolean {
+  return dueBots(d, now).length > 0;
+}
+
+/** Fait jouer les robots dont c'est le moment (mème validé ou note donnée). */
+function runBots(d: RoomState, ctx: Ctx): void {
+  const cur = d.current;
+  if (!cur) return;
+  for (const bot of dueBots(d, ctx.now)) {
+    if (d.phase === "create") {
+      const rp = cur.participants[bot.id];
+      const rand = botCreateRng(d, bot.id);
+      rand(); // 1er tirage : le délai
+      const options = cur.forcedTemplateId ? [cur.forcedTemplateId] : rp.hands.flat();
+      const candidates = options.map((id) => resolveTemplate(d, ctx, id, true)).filter((t): t is TemplateMeta => t !== null);
+      const template = candidates.length ? candidates[Math.floor(rand() * candidates.length)] : null;
+      rp.meme = template ? sanitizeMeme(buildBotMeme(template, rp.situations, d.settings.stickers, rand), template, d.settings.stickers) : null;
+      // validé même sans gabarit exploitable : le robot ne doit jamais bloquer la manche
+      rp.submitted = true;
+    } else {
+      const m = currentMeme(d);
+      if (!m) continue;
+      const rand = botVoteRng(d, m.id, bot.id);
+      rand(); // 1er tirage : le délai
+      m.votes[bot.id] = botScore(rand);
+    }
+    bump(ctx);
+  }
+}
+
 function applyTransition(d: RoomState, ctx: Ctx, t: Transition): void {
   switch (t.kind) {
     case "toVote":
@@ -499,6 +580,9 @@ function applyTransition(d: RoomState, ctx: Ctx, t: Transition): void {
       break;
     case "restartVote":
       setPhase(d, ctx, "vote", t.at, d.settings.voteSeconds * 1000);
+      break;
+    case "bots":
+      runBots(d, ctx);
       break;
   }
 }
@@ -645,7 +729,7 @@ function doKick(d: RoomState, ctx: Ctx, player: PlayerState, targetId: string): 
   const target = findPlayer(d, targetId);
   if (!target) return DONE; // déjà retiré : idempotent
   d.players = d.players.filter((p) => p.id !== target.id);
-  if (!d.kicked.includes(target.token)) d.kicked.push(target.token);
+  if (!target.bot && !d.kicked.includes(target.token)) d.kicked.push(target.token);
   if (d.kicked.length > 200) d.kicked = d.kicked.slice(-200);
   if (d.current) delete d.current.participants[target.id];
   const open = currentMeme(d);
@@ -798,10 +882,56 @@ function doAgain(d: RoomState, ctx: Ctx, player: PlayerState): Step {
   return DONE;
 }
 
+function doAddBots(d: RoomState, ctx: Ctx, player: PlayerState, rawCount: number): Step {
+  if (!isHost(d, player)) return fail("not_host", "Seul l'hôte peut ajouter des robots.");
+  if (d.phase !== "lobby") return fail("bad_phase", "Les robots s'ajoutent dans la salle d'attente.");
+  if (typeof rawCount !== "number" || !Number.isFinite(rawCount) || rawCount < 1) return fail("invalid", "Nombre de robots invalide.");
+  const count = Math.min(MAX_BOTS_PER_CALL, Math.round(rawCount), LIMITS.maxPlayers - activeCount(d));
+  if (count <= 0) return fail("room_full", "La salle est pleine.");
+  for (let i = 0; i < count; i++) {
+    const seq = d.nextSeq;
+    const rand = rng(d, "bot", seq);
+    const taken = d.players.map((p) => p.name);
+    const lower = new Set(taken.map((n) => n.toLocaleLowerCase("fr")));
+    const free = BOT_NAMES.filter((n) => !lower.has(n.toLocaleLowerCase("fr")));
+    const base = free.length ? free[Math.floor(rand() * free.length)] : `Robot n°${seq}`;
+    let id = `b${seq}`;
+    if (d.players.some((p) => p.id === id)) id = `${id}-bot`;
+    d.players.push({
+      id,
+      token: `bot:${id}`, // jamais accepté comme jeton (et ignoré par `authenticate`)
+      name: uniqueName(base, taken, LIMITS.nameMaxLength),
+      avatar: BOT_AVATARS[Math.floor(rand() * BOT_AVATARS.length)],
+      color: pickColor(d),
+      seq,
+      joinedAt: ctx.now,
+      lastSeen: ctx.now,
+      connected: true,
+      left: false,
+      jokersLeft: d.settings.jokers,
+      pv: 0,
+      seen: {},
+      bot: true,
+    });
+    d.nextSeq += 1;
+  }
+  bump(ctx);
+  return DONE;
+}
+
+function doRemoveBots(d: RoomState, ctx: Ctx, player: PlayerState): Step {
+  if (!isHost(d, player)) return fail("not_host", "Seul l'hôte peut retirer les robots.");
+  if (d.phase !== "lobby") return fail("bad_phase", "Les robots se retirent dans la salle d'attente.");
+  if (!d.players.some((p) => p.bot)) return DONE; // déjà fait : idempotent
+  d.players = d.players.filter((p) => !p.bot);
+  bump(ctx);
+  return DONE;
+}
+
 function dispatch(d: RoomState, ctx: Ctx, playerId: string | null, action: Action, creds?: JoinCredentials): Step {
   const player = findPlayer(d, playerId);
   if (action.type === "join") return doJoin(d, ctx, player, action, creds);
-  if (!player || player.left) return fail("bad_token", "Joueur inconnu dans cette salle.");
+  if (!player || player.left || player.bot) return fail("bad_token", "Joueur inconnu dans cette salle.");
   switch (action.type) {
     case "leave":
       return doLeave(d, ctx, player);
@@ -824,6 +954,10 @@ function dispatch(d: RoomState, ctx: Ctx, playerId: string | null, action: Actio
       return doRemoveMeme(d, ctx, player, action.memeId);
     case "again":
       return doAgain(d, ctx, player);
+    case "addBots":
+      return doAddBots(d, ctx, player, action.count);
+    case "removeBots":
+      return doRemoveBots(d, ctx, player);
     default:
       return fail("invalid", "Action inconnue.");
   }
@@ -1027,6 +1161,7 @@ export function buildView(room: RoomState, playerId: string | null, now: number)
       score: scores.get(p.id) ?? 0,
       connected: p.connected,
       isHost: p.id === room.hostId,
+      isBot: p.bot === true,
       done,
     };
   });

@@ -38,7 +38,7 @@ function pick<T>(w: World, items: readonly T[]): T | undefined {
 }
 
 function activeIds(w: World): string[] {
-  return w.room.players.filter((p) => !p.left).map((p) => p.id);
+  return w.room.players.filter((p) => !p.left && !p.bot).map((p) => p.id);
 }
 
 function stripNow(view: RoomView): string {
@@ -66,7 +66,9 @@ function check(w: World): void {
   }
   if (room.phase === "lobby") ensure(room.round === 0, "lobby avec une manche");
   const present = room.players.filter((p) => !p.left);
-  if (present.length > 0) ensure(room.players.some((p) => p.id === room.hostId), "hôte inexistant");
+  if (present.some((p) => !p.bot)) ensure(room.players.some((p) => p.id === room.hostId), "hôte inexistant");
+  ensure(!room.players.find((p) => p.id === room.hostId)?.bot, "un robot est hôte");
+  for (const p of room.players) if (p.bot) ensure(p.connected && !p.left, "robot déconnecté");
   ensure(new Set(room.players.map((p) => p.id)).size === room.players.length, "ids en double");
   ensure(new Set(room.players.map((p) => p.token)).size === room.players.length, "jetons en double");
   ensure(new Set(room.players.map((p) => p.name.toLowerCase())).size === room.players.length, "noms en double");
@@ -163,7 +165,7 @@ function act(w: World, playerId: string | null, action: Action, creds?: { player
   if (out.ok) {
     w.room = out.room;
     // rejouer exactement la même action ne doit plus rien changer (idempotence), sauf "skip" et "join" anonyme
-    if (action.type !== "skip" && !(action.type === "join" && creds)) {
+    if (action.type !== "skip" && action.type !== "addBots" && !(action.type === "join" && creds)) {
       const again = applyAction(w.room, playerId, action, w.now, w.catalog, creds);
       if (again.ok) expect(again.room, `action ${action.type} non idempotente`).toBe(w.room);
     }
@@ -247,7 +249,7 @@ function randomOp(w: World): void {
     const gone = pick(w, room.players.filter((p) => p.left));
     if (gone && act(w, gone.id, { type: "join", name: gone.name, avatar: "dog" })) w.online.add(gone.id);
   } else if (roll < 0.845) {
-    const target = pick(w, ids);
+    const target = pick(w, w.room.players.map((p) => p.id));
     if (target && act(w, w.rand() < 0.8 ? host : someone, { type: "kick", playerId: target })) w.online.delete(target);
   } else if (roll < 0.88) {
     act(w, w.rand() < 0.85 ? host : someone, { type: "skip" });
@@ -284,8 +286,12 @@ function randomOp(w: World): void {
       if (out.ok) w.room = out.room;
     }
     check(w);
-  } else if (roll < 0.985) {
+  } else if (roll < 0.982) {
     act(w, w.rand() < 0.85 ? host : someone, { type: "again" });
+  } else if (roll < 0.992) {
+    // robots (lobby surtout ; ailleurs : refus attendu)
+    if (w.rand() < 0.75) act(w, w.rand() < 0.9 ? host : someone, { type: "addBots", count: 1 + int(w, 4) });
+    else act(w, host, { type: "removeBots" });
   } else {
     // n'importe quoi : joueur inconnu, action sans droit
     act(w, pick(w, ["fantome", null]) ?? null, pick(w, [{ type: "start" }, { type: "skip" }, { type: "leave" }, { type: "again" }] as Action[])!);
@@ -333,6 +339,7 @@ function playGame(seed: number): World {
     type: "settings",
     patch: { mode: MODES[seed % 3], rounds: 1 + int(w, 3), createSeconds: 30 + int(w, 15), voteSeconds: 6 + int(w, 5), handSize: 3 + int(w, 4), rerolls: int(w, 3), jokers: int(w, 3) },
   });
+  if (w.rand() < 0.45) act(w, w.room.hostId, { type: "addBots", count: 1 + int(w, 5) });
   if (w.rand() < 0.8) act(w, w.room.hostId, { type: "start" });
   const steps = 120 + int(w, 120);
   for (let i = 0; i < steps; i++) randomOp(w);

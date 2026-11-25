@@ -26,6 +26,8 @@ export interface PlayerState {
   pv: number;
   /** gabarits déjà proposés : templateId -> numéro de distribution */
   seen: Record<string, number>;
+  /** robot piloté par le moteur (jeton inutilisable, toujours « connecté », jamais hôte) */
+  bot?: boolean;
 }
 
 export interface RoundPlayer {

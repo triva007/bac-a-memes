@@ -239,7 +239,11 @@ export function parseAction(raw: unknown): Action | null {
     case "unsubmit":
     case "skip":
     case "again":
+    case "removeBots":
       return { type: raw.type };
+    case "addBots":
+      if (typeof raw.count !== "number" || !Number.isFinite(raw.count)) return null;
+      return { type: "addBots", count: raw.count };
     case "settings":
       if (!isRecord(raw.patch)) return null;
       return { type: "settings", patch: raw.patch as Partial<Settings> };

@@ -24,6 +24,11 @@ function PlayerTile({ player, isMe, onKick }: { player: PlayerView; isMe: boolea
             <Emoji id="zzz" size={16} alt="Hors ligne" />
           </span>
         ) : null}
+        {player.isBot ? (
+          <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded-md border-2 border-ink bg-fluo-blue px-1 py-px text-[0.56rem] font-extrabold uppercase leading-none tracking-wide text-ink">
+            robot
+          </span>
+        ) : null}
       </span>
       <span className={`mt-1.5 line-clamp-2 w-full text-center text-[0.8rem] font-bold leading-[1.15] [overflow-wrap:anywhere] ${player.connected ? "text-paper" : "text-paper/45"}`}>
         {player.name}
@@ -45,7 +50,7 @@ function PlayerTile({ player, isMe, onKick }: { player: PlayerView; isMe: boolea
       <button
         type="button"
         onClick={onKick}
-        aria-label={`${player.name}${player.connected ? "" : " (hors ligne)"}. Retirer de la salle`}
+        aria-label={`${player.name}${player.isBot ? " (robot)" : ""}${player.connected ? "" : " (hors ligne)"}. Retirer de la salle`}
         className={`${cls} outline-none hover:bg-paper/10 focus-visible:ring-4 focus-visible:ring-fluo-blue active:scale-95`}
       >
         {body}
@@ -90,6 +95,23 @@ export function PlayersPanel({ view, api }: PhaseProps) {
     } finally {
       setBusy(false);
       setConfirmOpen(false);
+    }
+  };
+
+  const botCount = view.players.filter((p) => p.isBot).length;
+  const roomFull = view.players.length >= LIMITS.maxPlayers;
+  const [botsBusy, setBotsBusy] = useState(false);
+  const bots = async (action: { type: "addBots"; count: number } | { type: "removeBots" }) => {
+    if (botsBusy) return;
+    setBotsBusy(true);
+    setError(null);
+    try {
+      await api.send(action);
+    } catch (e) {
+      sfx.play("error");
+      setError((e as Partial<ApiFailure>).message || "Impossible de modifier les robots.");
+    } finally {
+      setBotsBusy(false);
     }
   };
 
@@ -148,6 +170,21 @@ export function PlayersPanel({ view, api }: PhaseProps) {
         <p className="mt-2 px-1 text-center text-[0.8rem] font-medium text-muted">Un intrus&nbsp;? Touche un joueur pour le retirer de la salle.</p>
       ) : null}
 
+      {isHost ? (
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 px-1">
+          <p className="w-full text-center text-[0.8rem] font-medium text-muted">Pour tester le jeu tout seul.</p>
+          <button type="button" className="btn btn-ghost btn-sm !min-h-[44px]" onClick={() => bots({ type: "addBots", count: 3 })} disabled={botsBusy || roomFull}>
+            <Emoji id="robot" size={20} />
+            Ajouter des robots
+          </button>
+          {botCount > 0 ? (
+            <button type="button" className="btn btn-ghost btn-sm !min-h-[44px]" onClick={() => bots({ type: "removeBots" })} disabled={botsBusy}>
+              Retirer les robots
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
       {error ? (
         <p role="alert" className="mt-2 rounded-xl border-2 border-ink bg-fluo-pink px-3 py-2 text-[0.9rem] font-bold text-ink">
           {error}
@@ -165,7 +202,7 @@ export function PlayersPanel({ view, api }: PhaseProps) {
         {target ? (
           <span className="flex items-center gap-3">
             <Avatar avatar={target.avatar} color={target.color} size={48} />
-            <span>{target.name} sortira de la salle et ne pourra plus y revenir avec ce téléphone.</span>
+            <span>{target.isBot ? `${target.name} est un robot : il quittera simplement la salle.` : `${target.name} sortira de la salle et ne pourra plus y revenir avec ce téléphone.`}</span>
           </span>
         ) : null}
       </ConfirmDialog>

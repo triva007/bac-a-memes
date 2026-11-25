@@ -535,6 +535,35 @@ describe("pack perso : routes images", () => {
   });
 });
 
+describe("robots par les routes", () => {
+  it("addBots / removeBots : vue avec isBot, lancement possible à 1 humain + robots, formes invalides refusées", async () => {
+    const room = await createRoom();
+    const alone = await act(room.code, { type: "start", token: room.token });
+    expect(alone.status).toBe(400);
+    const added = await act(room.code, { type: "addBots", token: room.token, count: 3 });
+    expect(added.status).toBe(200);
+    expect(added.body.state.players.map((p) => p.isBot)).toEqual([false, true, true, true]);
+    expect((await act(room.code, { type: "addBots", token: room.token })).status).toBe(400);
+    expect((await act(room.code, { type: "addBots", token: room.token, count: "3" })).status).toBe(400);
+    const lea = await join(room.code, "Léa");
+    expect((await act(room.code, { type: "addBots", token: lea.token, count: 1 })).status).toBe(403);
+    const removed = await act(room.code, { type: "removeBots", token: room.token });
+    expect(removed.body.state.players.every((p) => !p.isBot)).toBe(true);
+    await act(room.code, { type: "leave", token: lea.token });
+    await act(room.code, { type: "addBots", token: room.token, count: 2 });
+    const started = await act(room.code, { type: "start", token: room.token });
+    expect(started.body.state).toMatchObject({ phase: "create", create: { totalPlayers: 3 } });
+    // les robots jouent pendant que l'humain interroge le serveur
+    for (let i = 0; i < 45; i++) {
+      advance(1_000);
+      await poll(room.code, room.token);
+    }
+    const view = (await poll(room.code, room.token)).body as RoomView;
+    expect(view.players.filter((p) => p.isBot && p.done)).toHaveLength(2);
+    expect(view.phase).toBe("create");
+  });
+});
+
 describe("GET /api/diag", () => {
   it("renvoie un rapport JSON 200 avec l'aller-retour de stockage", async () => {
     const res = await diagGET();

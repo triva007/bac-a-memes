@@ -183,9 +183,11 @@ export class Sim {
     let guard = 0;
     while (this.phase !== "final") {
       if (guard++ > 5000) throw new Error("la partie ne se termine pas");
+      const before = `${this.phase}/${this.room.current?.index}`;
       if (this.phase === "create") this.submitAll();
       else if (this.phase === "vote") this.voteAll(score);
-      else this.wait(1000);
+      // rien n'a bougé (minuteur, ou robots qui n'ont pas encore joué) : le temps passe
+      if (`${this.phase}/${this.room.current?.index}` === before) this.wait(1000);
     }
   }
 }
