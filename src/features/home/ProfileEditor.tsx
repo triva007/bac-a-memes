@@ -122,7 +122,7 @@ export function ProfileEditor({
           initial={{ scale: 0.7, rotate: -10 }}
           animate={{ scale: 1, rotate: -4 }}
           transition={{ type: "spring", stiffness: 500, damping: 18 }}
-          className="grid h-[60px] w-[60px] flex-none place-items-center rounded-2xl border-[3px] border-ink bg-fluo-yellow shadow-[3px_3px_0_0_var(--color-ink)]"
+          className="grid h-[60px] w-[60px] flex-none place-items-center rounded-2xl md:h-[72px] md:w-[72px] md:[&_img]:!h-12 md:[&_img]:!w-12 border-[3px] border-ink bg-fluo-yellow shadow-[3px_3px_0_0_var(--color-ink)]"
           aria-hidden
         >
           <Emoji id={avatar} size={42} />
@@ -159,7 +159,7 @@ export function ProfileEditor({
               onClick={rollName}
               aria-label="Pseudo au hasard"
               title="Pseudo au hasard"
-              className="absolute right-1 top-1 grid h-[44px] w-[48px] place-items-center rounded-[10px] outline-none hover:bg-ink/10 focus-visible:ring-4 focus-visible:ring-fluo-blue"
+              className="absolute right-1 top-1 grid h-[44px] w-[48px] place-items-center md:h-[48px] md:w-[52px] rounded-[10px] outline-none hover:bg-ink/10 focus-visible:ring-4 focus-visible:ring-fluo-blue"
             >
               <motion.span
                 key={rolls}
@@ -189,7 +189,7 @@ export function ProfileEditor({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="-mr-2 flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-[0.85rem] font-bold text-ink/70 underline decoration-2 underline-offset-2 outline-none hover:text-ink focus-visible:ring-4 focus-visible:ring-fluo-blue"
+            className="-mr-2 flex min-h-[36px] items-center md:min-h-[48px] gap-1 rounded-lg px-2 text-[0.85rem] font-bold text-ink/70 underline decoration-2 underline-offset-2 outline-none hover:text-ink focus-visible:ring-4 focus-visible:ring-fluo-blue"
           >
             {expanded ? "Replier" : `Voir les ${AVATARS.length}`}
             <Icon name="chevron-down" size={16} className={expanded ? "rotate-180" : ""} />
@@ -203,8 +203,8 @@ export function ProfileEditor({
             onKeyDown={onGridKey}
             className={
               expanded
-                ? "grid grid-cols-[repeat(auto-fill,minmax(46px,1fr))] gap-1 p-1"
-                : "no-scrollbar grid snap-x grid-flow-col grid-rows-2 gap-1 overflow-x-auto overscroll-x-contain p-1 [grid-auto-columns:46px]"
+                ? "grid grid-cols-[repeat(auto-fill,minmax(46px,1fr))] gap-1 p-1 md:grid-cols-[repeat(auto-fill,minmax(56px,1fr))]"
+                : "no-scrollbar grid snap-x grid-flow-col grid-rows-2 gap-1 overflow-x-auto overscroll-x-contain p-1 [grid-auto-columns:46px] md:[grid-auto-columns:56px]"
             }
           >
             {AVATARS.map((id, i) => {
@@ -219,7 +219,7 @@ export function ProfileEditor({
                   tabIndex={selected ? 0 : -1}
                   onClick={() => pick(id)}
                   className={[
-                    "grid aspect-square min-h-[46px] snap-start place-items-center rounded-xl border-[2.5px] outline-none transition-transform duration-100",
+                    "grid aspect-square min-h-[46px] snap-start place-items-center rounded-xl border-[2.5px] outline-none transition-transform duration-100 md:min-h-[56px] md:[&_img]:!h-10 md:[&_img]:!w-10",
                     "focus-visible:ring-4 focus-visible:ring-fluo-blue",
                     selected ? "z-[1] scale-105 border-ink bg-fluo-yellow shadow-[2px_2px_0_0_var(--color-ink)]" : "border-transparent hover:bg-ink/10 active:scale-90",
                   ].join(" ")}

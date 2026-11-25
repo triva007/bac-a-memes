@@ -80,10 +80,10 @@ function VoteStage({ view, api, vote }: PhaseProps & { vote: Vote }) {
 
   return (
     <div
-      className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col px-3 pt-2"
+      className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col px-3 pt-2 md:max-w-[50rem] md:px-6 md:pt-3 lg:landscape:max-w-[1240px]"
       style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
     >
-      <header className="flex h-9 flex-none items-center justify-between gap-3">
+      <header className="tablet-zoom flex h-9 flex-none items-center justify-between gap-3">
         <div className="-rotate-2 rounded-lg border-2 border-ink bg-paper px-2.5 py-0.5 font-display text-[15px] font-extrabold leading-tight text-ink shadow-[2px_2px_0_0_rgba(0,0,0,0.55)]">
           Mème <span className="tabular-nums">{vote.index + 1}</span>
           <span className="text-ink/50">/{vote.count}</span>
@@ -92,6 +92,8 @@ function VoteStage({ view, api, vote }: PhaseProps & { vote: Vote }) {
       </header>
       <TimeBar left={left} total={total} className="mt-1.5 flex-none" />
 
+      {/* tablette en paysage : le mème en grand à gauche, les notes à droite */}
+      <div className="flex min-h-0 flex-1 flex-col lg:landscape:flex-row lg:landscape:gap-8">
       <div className="relative min-h-0 flex-1">
         <AnimatePresence initial={false}>
           <motion.div
@@ -108,7 +110,7 @@ function VoteStage({ view, api, vote }: PhaseProps & { vote: Vote }) {
         </AnimatePresence>
       </div>
 
-      <div className="flex-none">
+      <div className="tablet-zoom flex-none lg:landscape:flex lg:landscape:w-[21.5rem] lg:landscape:flex-col lg:landscape:justify-center" data-testid="vote-panel">
         {revealing && vote.result ? (
           <RevealPanel key={vote.memeId} result={vote.result} myVote={mine} isMine={vote.isMine} players={view.players} />
         ) : vote.isMine ? (
@@ -119,6 +121,7 @@ function VoteStage({ view, api, vote }: PhaseProps & { vote: Vote }) {
           <SpectatorPanel />
         )}
         {isHost ? <HostTools view={view} api={api} left={left} total={total} memeId={vote.memeId} revealing={revealing} /> : null}
+      </div>
       </div>
     </div>
   );
@@ -144,7 +147,7 @@ function VoteProgress({ voted, voters, closed }: { voted: number; voters: number
 function VoteButtons({ mine, error, onVote }: { mine: VoteScore | null; error: string | null; onVote: (s: VoteScore) => void }) {
   return (
     <div>
-      <div className="grid grid-cols-4 gap-2" role="group" aria-label="Ta note pour ce mème">
+      <div className="grid grid-cols-4 gap-2 md:gap-3 lg:landscape:grid-cols-2" role="group" aria-label="Ta note pour ce mème">
         {VOTE_OPTIONS.map((o) => {
           const selected = mine === o.score;
           const dimmed = mine !== null && !selected;
@@ -155,7 +158,7 @@ function VoteButtons({ mine, error, onVote }: { mine: VoteScore | null; error: s
               aria-pressed={selected}
               onClick={() => onVote(o.score)}
               className={[
-                "relative flex h-[86px] select-none flex-col items-center justify-start gap-0.5 rounded-2xl border-[3px] border-ink px-0.5 pt-2",
+                "relative flex h-[86px] select-none flex-col items-center justify-start gap-0.5 rounded-2xl border-[3px] border-ink px-0.5 pt-2 md:h-[94px] md:justify-center md:pt-0 lg:landscape:h-[112px]",
                 "font-display text-[13px] font-extrabold leading-[1.05] text-ink outline-none",
                 "transition-[transform,box-shadow,opacity,filter] duration-100 [touch-action:manipulation]",
                 "focus-visible:ring-4 focus-visible:ring-fluo-blue",

@@ -25,6 +25,14 @@ const FOOTER_H = 72;
 const QUICK_H = 52;
 /** en dessous de cette hauteur visible (clavier ouvert), on passe en mise en page serrée */
 const COMPACT_BELOW = 430;
+/**
+ * Tablette / ordinateur en paysage : aperçu à gauche, champs à droite. Le clavier
+ * virtuel (qui mange la moitié de l'écran en paysage) ne cache alors ni le mème
+ * ni le champ en cours.
+ */
+const WIDE_MIN_W = 900;
+/** en deux colonnes, la mise en page serrée n'est utile que sous cette hauteur visible */
+const WIDE_COMPACT_BELOW = 280;
 
 const STICKER_SPOTS: { x: number; y: number; r: number }[] = [
   { x: 0.5, y: 0.5, r: -6 },
@@ -166,7 +174,8 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
   const [showMissing, setShowMissing] = useState(false);
 
   const box = useViewportBox(rootRef);
-  const compact = box ? box.h < COMPACT_BELOW : false;
+  const wide = box ? box.w >= WIDE_MIN_W && box.w > box.full : false;
+  const compact = box ? box.h < (wide ? WIDE_COMPACT_BELOW : COMPACT_BELOW) : false;
   const theme = create?.theme ?? null;
   const themeH = theme ? (compact ? 34 : 52) : 0;
   const previewH = box ? Math.max(84, Math.min(Math.round(box.full * 0.42), Math.round(box.h * 0.5), box.h - themeH - 156 - (compact ? 0 : FOOTER_H))) : null;
@@ -408,8 +417,12 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
   const perso = isPersoTemplateId(templateId);
 
   return (
-    <div ref={rootRef} className="relative h-full w-full overflow-hidden" data-testid="editor" data-compact={compact ? "1" : "0"} onFocusCapture={onFocusCapture} onBlurCapture={onBlurCapture}>
-      <div className="absolute inset-x-0 mx-auto flex w-full max-w-[600px] flex-col" style={{ top: box?.shift ?? 0, height: box ? box.h : "100%" }}>
+    <div ref={rootRef} className="relative h-full w-full overflow-hidden" data-testid="editor" data-compact={compact ? "1" : "0"} data-wide={wide ? "1" : "0"} onFocusCapture={onFocusCapture} onBlurCapture={onBlurCapture}>
+      <div
+        className={`absolute inset-x-0 mx-auto flex w-full ${wide ? "max-w-[1240px] flex-row gap-3 px-4" : "max-w-[600px] flex-col md:max-w-[42rem]"}`}
+        style={{ top: box?.shift ?? 0, height: box ? box.h : "100%", paddingLeft: wide ? "max(1rem, env(safe-area-inset-left))" : undefined }}
+      >
+        <div className={wide ? "flex min-h-0 min-w-0 flex-1 flex-col" : "contents"}>
         {theme ? (
           <div className="flex-none px-3 pt-1.5" style={{ height: themeH }}>
             <ThemeBanner theme={theme} compact style={{ height: "100%" }} />
@@ -417,7 +430,7 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
         ) : null}
 
         {/* ------------------------------------------------ aperçu */}
-        <div className="relative flex-none px-3 pb-1 pt-2" style={{ height: previewH ?? "42%" }} onClick={onPreviewClick} data-testid="preview">
+        <div className={`relative px-3 pt-2 ${wide ? "min-h-0 flex-1 pb-4" : "flex-none pb-1"}`} style={wide ? undefined : { height: previewH ?? "42%" }} onClick={onPreviewClick} data-testid="preview">
           <div className="relative h-full w-full" style={{ filter: "drop-shadow(4px 5px 0 rgba(0,0,0,0.5))" }}>
             <MemeView
               meme={meme}
@@ -454,9 +467,10 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
             ) : null}
           </AnimatePresence>
         </div>
+        </div>
 
-        {/* ------------------------------------------------ bas : champs, noms, actions (+ feuille stickers par-dessus) */}
-        <div className="relative flex min-h-0 flex-1 flex-col">
+        {/* ------------------------------------------------ bas (ou colonne de droite) : champs, noms, actions (+ feuille stickers par-dessus) */}
+        <div className={`relative flex min-h-0 flex-col ${wide ? "w-[min(31rem,45%)] flex-none border-l-2 border-paper/10 bg-ink/40" : "flex-1"}`}>
           <div ref={scrollRef} className="no-scrollbar relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-3" data-testid="fields">
             {!templateOk ? (
               <div className="card mt-3 p-4 text-center">

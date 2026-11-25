@@ -28,7 +28,7 @@ function mergeNames(current: string[], added: string[]): string[] {
 }
 
 function Chip({ name, color, onRemove }: { name: string; color: string; onRemove?: () => void }) {
-  const cls = "flex min-h-[40px] max-w-full items-center gap-1 rounded-full border-[2.5px] border-ink py-1 pl-3 text-[0.92rem] font-bold leading-tight";
+  const cls = "flex min-h-[40px] max-w-full md:min-h-[48px] items-center gap-1 rounded-full border-[2.5px] border-ink py-1 pl-3 text-[0.92rem] font-bold leading-tight";
   if (!onRemove) {
     return (
       <span className={`${cls} pr-3`} style={{ background: color }}>

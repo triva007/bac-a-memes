@@ -128,7 +128,7 @@ export function PlayersPanel({ view, api }: PhaseProps) {
         {offline > 0 ? <p className="text-[0.8rem] font-semibold text-muted">{offline} hors ligne</p> : null}
       </div>
 
-      <ul className="grid grid-cols-4 items-start gap-x-1 gap-y-1.5 sm:grid-cols-5">
+      <ul className="grid grid-cols-4 items-start gap-x-1 gap-y-1.5 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-5">
         <AnimatePresence initial={false} mode="popLayout">
           {view.players.map((p) => (
             <motion.li
@@ -173,12 +173,12 @@ export function PlayersPanel({ view, api }: PhaseProps) {
       {isHost ? (
         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 px-1">
           <p className="w-full text-center text-[0.8rem] font-medium text-muted">Pour tester le jeu tout seul.</p>
-          <button type="button" className="btn btn-ghost btn-sm !min-h-[44px]" onClick={() => bots({ type: "addBots", count: 3 })} disabled={botsBusy || roomFull}>
+          <button type="button" className="btn btn-ghost btn-sm !min-h-[44px] md:!min-h-[48px]" onClick={() => bots({ type: "addBots", count: 3 })} disabled={botsBusy || roomFull}>
             <Emoji id="robot" size={20} />
             Ajouter des robots
           </button>
           {botCount > 0 ? (
-            <button type="button" className="btn btn-ghost btn-sm !min-h-[44px]" onClick={() => bots({ type: "removeBots" })} disabled={botsBusy}>
+            <button type="button" className="btn btn-ghost btn-sm !min-h-[44px] md:!min-h-[48px]" onClick={() => bots({ type: "removeBots" })} disabled={botsBusy}>
               Retirer les robots
             </button>
           ) : null}

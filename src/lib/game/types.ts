@@ -77,7 +77,7 @@ export interface Settings {
   createSeconds: number;
   /** durée de vote par mème en secondes, 6..40 */
   voteSeconds: number;
-  /** nombre de gabarits proposés par main, 3..6 */
+  /** nombre de gabarits proposés par main, 3..10 */
   handSize: number;
   /** nombre de relances de main par manche, 0..4 */
   rerolls: number;
@@ -100,7 +100,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rounds: 3,
   createSeconds: 90,
   voteSeconds: 15,
-  handSize: 6,
+  handSize: 8,
   rerolls: 2,
   jokers: 1,
   categories: [],

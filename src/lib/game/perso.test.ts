@@ -133,6 +133,8 @@ describe("pack perso : distribution", () => {
       [4, 1],
       [5, 2],
       [6, 2],
+      [8, 3],
+      [10, 3],
     ] as const) {
       const sim = new Sim({ players: 6, settings: { handSize, rerolls: 2 } });
       for (let i = 0; i < 12; i++) add(sim, sim.ids[i % 6]);

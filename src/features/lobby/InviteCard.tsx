@@ -130,18 +130,18 @@ export function InviteCard({ code }: { code: string }) {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <section className="card relative flex items-stretch gap-3 p-3 lg:flex-col lg:items-center lg:gap-4 lg:p-5" aria-label="Inviter des joueurs">
-        <div className="flex min-w-0 flex-1 flex-col justify-between lg:items-center lg:text-center">
+      <section className="card relative flex items-stretch gap-3 p-3 md:p-4 md:max-lg:grid md:max-lg:grid-cols-[minmax(0,1fr)_auto] md:max-lg:items-center" aria-label="Inviter des joueurs">
+        <div className="flex min-w-0 flex-1 flex-col justify-between md:max-lg:contents">
           <div>
             <div className="text-[0.74rem] font-bold uppercase tracking-wide text-ink/60">Code de la salle</div>
             <div
-              className="mt-0.5 w-fit -rotate-1 font-display max-w-full text-[clamp(2.4rem,12vw,3.4rem)] font-extrabold leading-[0.95] tracking-[0.04em] lg:text-[5.4rem]"
+              className="mt-0.5 w-fit -rotate-1 font-display max-w-full text-[clamp(2.4rem,12vw,3.4rem)] font-extrabold leading-[0.95] tracking-[0.04em] md:text-[clamp(2rem,5vw,2.5rem)] lg:text-[clamp(3rem,5.4vw,4rem)]"
               aria-label={code.split("").join(" ")}
             >
               <span className="hl [--hl:var(--color-fluo-yellow)]">{code}</span>
             </div>
           </div>
-          <button type="button" className="btn btn-sm btn-green mt-2 w-fit lg:mt-4 lg:!min-h-[48px] lg:!px-5 lg:!text-[1rem]" onClick={share}>
+          <button type="button" className="btn btn-sm btn-green mt-2 w-fit whitespace-nowrap md:max-lg:col-span-2 md:max-lg:row-start-2 md:max-lg:mt-0 md:max-lg:w-full lg:mt-4 lg:!px-5 lg:!text-[1rem]" onClick={share}>
             <Icon name={copied ? "check" : canShare ? "share" : "copy"} size={18} />
             <span aria-live="polite">{copied ? "Lien copié !" : canShare ? "Partager le lien" : "Copier le lien"}</span>
           </button>
@@ -150,10 +150,10 @@ export function InviteCard({ code }: { code: string }) {
           type="button"
           onClick={() => setZoom(true)}
           aria-label="Agrandir le QR code"
-          className="group relative flex-none self-center rounded-[14px] border-[3px] border-ink bg-white p-1 outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue lg:order-first"
+          className="group relative flex-none self-center rounded-[14px] border-[3px] border-ink bg-white p-1 outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue md:max-lg:col-start-2 md:max-lg:row-start-1"
         >
-          <QrCode text={joinUrl} className="h-[104px] w-[104px] lg:h-[230px] lg:w-[230px]" />
-          <span className="absolute -bottom-2 -right-2 grid h-7 w-7 place-items-center rounded-full border-2 border-ink bg-fluo-yellow lg:hidden" aria-hidden>
+          <QrCode text={joinUrl} className="h-[104px] w-[104px] md:h-[116px] md:w-[116px] lg:h-[164px] lg:w-[164px]" />
+          <span className="absolute -bottom-2 -right-2 grid h-7 w-7 place-items-center rounded-full border-2 border-ink bg-fluo-yellow" aria-hidden>
             <Icon name="expand" size={14} strokeWidth={3} />
           </span>
         </button>
@@ -169,7 +169,7 @@ export function InviteCard({ code }: { code: string }) {
           text={tvUrl}
           label="Copier"
           doneLabel="Copié"
-          className="flex min-h-[44px] flex-none items-center gap-1.5 rounded-xl border-2 border-paper/35 px-2.5 text-[0.82rem] font-bold text-paper outline-none hover:bg-paper/10 focus-visible:ring-4 focus-visible:ring-fluo-blue"
+          className="flex min-h-[44px] flex-none items-center gap-1.5 rounded-xl border-2 border-paper/35 px-2.5 text-[0.82rem] md:min-h-[48px] font-bold text-paper outline-none hover:bg-paper/10 focus-visible:ring-4 focus-visible:ring-fluo-blue"
           iconSize={16}
         />
       </aside>

@@ -164,6 +164,43 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
+/*
+ * TABLETTE / iPad (et au-delà) — écrans joueur uniquement (`data-player-ui`,
+ * pas l'écran de classe). Tout ce qui est exprimé en rem (textes, espacements
+ * Tailwind, cibles tactiles h-11 = 49,5 px) monte d'un cran ; les boutons et
+ * champs de la charte suivent. `min-height` écarte les téléphones en paysage.
+ */
+@media (min-width: 768px) and (min-height: 600px) {
+  html:has([data-player-ui]) { font-size: 112.5%; }
+  html:has([data-player-ui]) .btn { min-height: 56px; }
+  html:has([data-player-ui]) .btn-sm { min-height: 48px; }
+  html:has([data-player-ui]) .field { min-height: 56px; }
+  /* blocs dimensionnés en px (vote, podium, classements) : agrandis d'un bloc. Jamais autour d'un mème (MemeView mesure sa case). */
+  .tablet-zoom { zoom: 1.2; }
+}
+/* podium : agrandi seulement quand la hauteur le permet (tablette en portrait, grand écran) */
+@media (min-width: 768px) and (min-height: 880px) {
+  .tablet-zoom-tall { zoom: 1.25; }
+}
+
+/* Appareils tactiles : pas d'effet de survol qui reste « collé » après un tap */
+@media (hover: none) {
+  .btn:hover { filter: none; }
+}
+
+/* Vignette « image seule » (sélecteur, joker) : l'image du mème recadrée, GIF animé conservé */
+.thumb-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 35%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

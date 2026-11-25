@@ -178,5 +178,12 @@ export function GameShell({ code }: { code: string }) {
   else if (status === "ok" && view) content = <GameFrame view={view} api={api} offline={offline} onLeave={leave} />;
   else content = <LoadingScreen code={code} />;
 
-  return <MotionConfig reducedMotion="user">{content}</MotionConfig>;
+  // `data-player-ui` : active l'échelle « tablette » de globals.css (pas sur l'écran de classe)
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="contents" data-player-ui>
+        {content}
+      </div>
+    </MotionConfig>
+  );
 }

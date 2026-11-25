@@ -266,7 +266,7 @@ function randomOp(w: World): void {
         rounds: 1 + int(w, 3),
         createSeconds: 30 + int(w, 20),
         voteSeconds: 6 + int(w, 6),
-        handSize: 3 + int(w, 4),
+        handSize: 3 + int(w, 8),
         rerolls: int(w, 3),
         jokers: int(w, 3),
         stickers: w.rand() < 0.7,
@@ -337,7 +337,7 @@ function playGame(seed: number): World {
   for (let i = 0; i < others; i++) join(w);
   act(w, w.room.hostId, {
     type: "settings",
-    patch: { mode: MODES[seed % 3], rounds: 1 + int(w, 3), createSeconds: 30 + int(w, 15), voteSeconds: 6 + int(w, 5), handSize: 3 + int(w, 4), rerolls: int(w, 3), jokers: int(w, 3) },
+    patch: { mode: MODES[seed % 3], rounds: 1 + int(w, 3), createSeconds: 30 + int(w, 15), voteSeconds: 6 + int(w, 5), handSize: 3 + int(w, 8), rerolls: int(w, 3), jokers: int(w, 3) },
   });
   if (w.rand() < 0.45) act(w, w.room.hostId, { type: "addBots", count: 1 + int(w, 5) });
   if (w.rand() < 0.8) act(w, w.room.hostId, { type: "start" });

@@ -98,7 +98,7 @@ export function StickerPanel({ count, onAdd, onClose }: StickerPanelProps) {
               if (e.key === "Enter") e.currentTarget.blur();
             }}
             placeholder="Chercher : feu, clown, 20/20…"
-            className="field !min-h-[44px] !rounded-xl !border-[2.5px] !py-1.5 !pl-9"
+            className="field !min-h-[44px] !rounded-xl !border-[2.5px] !py-1.5 !pl-9 md:!min-h-[50px]"
             data-testid="sticker-search"
           />
         </label>
@@ -109,7 +109,7 @@ export function StickerPanel({ count, onAdd, onClose }: StickerPanelProps) {
         >
           {count}/{MAX_STICKERS}
         </span>
-        <button type="button" onClick={onClose} className="btn btn-sm btn-green flex-none !min-h-[44px] !px-3" data-testid="sticker-close">
+        <button type="button" onClick={onClose} className="btn btn-sm btn-green flex-none !min-h-[44px] !px-3 md:!min-h-[50px] md:!px-4" data-testid="sticker-close">
           <Icon name="check" size={18} stroke={3.4} />
           OK
         </button>

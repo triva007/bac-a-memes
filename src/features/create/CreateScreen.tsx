@@ -44,6 +44,19 @@ function CreateFlow({ view, api }: PhaseProps) {
 
   const [draft, setDraft] = useState<DraftState>(() => initDraft(view, storageKey));
   const [library, setLibrary] = useState(false);
+  /**
+   * Une fois la bibliothèque (plein écran) ouverte, le sélecteur qu'elle recouvre est
+   * retiré de l'affichage : ses GIF ne tournent plus derrière pour rien. `openSeq`
+   * numérote les ouvertures pour qu'un minuteur en retard ne masque pas la suivante.
+   */
+  const [openSeq, setOpenSeq] = useState(0);
+  const [coveredSeq, setCoveredSeq] = useState(-1);
+  useEffect(() => {
+    if (!library) return;
+    const t = setTimeout(() => setCoveredSeq(openSeq), 500);
+    return () => clearTimeout(t);
+  }, [library, openSeq]);
+  const pickerCovered = library && coveredSeq === openSeq;
   const [busy, setBusy] = useState<"submit" | "unsubmit" | null>(null);
   /** vrai quand on arrive dans l'éditeur par un tap sur un gabarit (ou d'office en mode « même image ») : le premier champ prend le focus */
   const [arrivedByTap, setArrivedByTap] = useState(() => forced !== null && !submitted && !create?.myMeme);
@@ -180,7 +193,7 @@ function CreateFlow({ view, api }: PhaseProps) {
           />
         </motion.div>
       ) : (
-        <motion.div key="pick" className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}>
+        <motion.div key="pick" className="h-full" style={{ display: pickerCovered ? "none" : undefined }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}>
           <Picker
             view={view}
             handIndex={draft.handIndex}
@@ -192,6 +205,7 @@ function CreateFlow({ view, api }: PhaseProps) {
             canJoker={canJoker}
             onOpenLibrary={() => {
               sfx.play("pop");
+              setOpenSeq((n) => n + 1);
               setLibrary(true);
             }}
             locked={clock.up}

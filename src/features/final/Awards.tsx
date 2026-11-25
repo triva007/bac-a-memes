@@ -66,14 +66,14 @@ export function Awards({
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-3 pb-6 pt-3 lg:px-6">
+    <div className="mx-auto w-full max-w-5xl px-3 pb-6 pt-3 md:px-6 md:pt-5 lg:max-w-[1180px]">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="min-w-0 font-display text-[26px] font-extrabold leading-tight text-paper">
+        <h2 className="min-w-0 font-display text-[26px] font-extrabold leading-tight text-paper md:text-[32px]">
           Les <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">diplômes</span>
         </h2>
         <button
           type="button"
-          className="btn btn-ghost btn-sm min-h-[44px] flex-none"
+          className="btn btn-ghost btn-sm min-h-[44px] flex-none md:min-h-[48px]"
           onClick={() => {
             sfx.play("pop");
             setFlipped(allFlipped ? new Set() : new Set(awards.map((a) => a.id)));
@@ -82,7 +82,7 @@ export function Awards({
           {allFlipped ? "Tout cacher" : "Tout retourner"}
         </button>
       </div>
-      <p className="mt-1 text-[13px] font-medium text-paper/60">Touche un diplôme pour découvrir qui le décroche.</p>
+      <p className="mt-1 text-[13px] font-medium text-paper/60 md:text-[15px]">Touche un diplôme pour découvrir qui le décroche.</p>
 
       <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {awards.map((award, i) => (

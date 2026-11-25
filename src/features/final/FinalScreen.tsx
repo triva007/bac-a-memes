@@ -72,7 +72,7 @@ function FinalStage({ view, api, final }: PhaseProps & { final: Final }) {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex-none border-b-[3px] border-ink bg-ink-2 px-2 py-1.5">
-        <div role="tablist" aria-label="Fin de partie" className="mx-auto grid max-w-xl grid-cols-4 gap-1">
+        <div role="tablist" aria-label="Fin de partie" className="mx-auto grid max-w-xl grid-cols-4 gap-1 md:max-w-[46rem] md:gap-2">
           {TABS.map((t) => {
             const active = tab === t.id;
             return (
@@ -84,7 +84,7 @@ function FinalStage({ view, api, final }: PhaseProps & { final: Final }) {
                 aria-selected={active}
                 aria-controls={`final-panel-${t.id}`}
                 onClick={() => select(t.id)}
-                className={`h-11 rounded-xl border-2 px-0.5 font-display text-[13.5px] font-extrabold leading-none tracking-tight outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue ${
+                className={`h-11 rounded-xl border-2 px-0.5 font-display text-[13.5px] font-extrabold md:h-[52px] md:text-[17px] leading-none tracking-tight outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue ${
                   active ? "border-ink bg-fluo-yellow text-ink shadow-[2px_2px_0_0_rgba(0,0,0,0.55)]" : "border-transparent text-paper/70 hover:text-paper"
                 }`}
               >
@@ -144,7 +144,7 @@ function FinalRanking({ ranked, me, seed }: { ranked: Ranked[]; me: Ranked | nul
   const lastIsMe = showLast && me?.player.id === last.player.id;
 
   return (
-    <div className="mx-auto w-full max-w-xl px-3 pb-6 pt-3">
+    <div className="tablet-zoom mx-auto w-full max-w-xl px-3 pb-6 pt-3 md:pt-5">
       <h2 className="font-display text-[26px] font-extrabold leading-tight text-paper">
         Classement <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">final</span>
       </h2>
@@ -230,13 +230,13 @@ function Footer({ view, api }: PhaseProps) {
 
   return (
     <footer className="flex-none border-t-[3px] border-ink bg-ink-2" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
-      <div className="mx-auto flex w-full max-w-xl items-center gap-3 px-3 pt-2">
+      <div className="mx-auto flex w-full max-w-xl items-center gap-3 px-3 pt-2 md:max-w-[46rem] md:px-5 md:pt-2.5">
         {view.me ? (
           <button
             type="button"
             onClick={leave}
             disabled={busy !== null}
-            className={`btn btn-sm min-h-[44px] flex-none ${confirmLeave ? "btn-pink" : "btn-ghost"}`}
+            className={`btn btn-sm min-h-[44px] flex-none md:min-h-[48px] ${confirmLeave ? "btn-pink" : "btn-ghost"}`}
           >
             {busy === "leave" ? "À la prochaine…" : confirmLeave ? "Sûr ? Quitter" : "Quitter"}
           </button>
@@ -245,13 +245,13 @@ function Footer({ view, api }: PhaseProps) {
           {error ? (
             <span className="text-[12px] font-semibold leading-tight text-fluo-pink">{error}</span>
           ) : !isHost ? (
-            <span className="text-[13px] font-medium leading-tight text-paper/55">
+            <span className="text-[13px] font-medium leading-tight text-paper/55 md:text-[15px]">
               {view.me ? "L'hôte peut lancer la revanche." : "Partie terminée. Merci d'avoir regardé !"}
             </span>
           ) : null}
         </div>
         {isHost ? (
-          <button type="button" className="btn btn-green min-h-[44px] flex-none px-5 py-2" onClick={again} disabled={busy !== null}>
+          <button type="button" className="btn btn-green min-h-[44px] flex-none px-5 py-2 md:min-h-[52px] md:px-7" onClick={again} disabled={busy !== null}>
             {busy === "again" ? "On relance…" : "Rejouer"}
           </button>
         ) : null}

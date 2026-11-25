@@ -34,13 +34,13 @@ export function Gallery({
   const items = filterMine ? mine : gallery;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-3 pb-6 pt-3 lg:px-6">
+    <div className="mx-auto w-full max-w-5xl px-3 pb-6 pt-3 md:px-6 md:pt-5 lg:max-w-[1180px]">
       <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
         <div className="min-w-0">
-          <h2 className="font-display text-[26px] font-extrabold leading-tight text-paper">
+          <h2 className="font-display text-[26px] font-extrabold leading-tight text-paper md:text-[32px]">
             La <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">galerie</span>
           </h2>
-          <p className="mt-0.5 text-[13px] font-medium text-paper/60">Touche un mème pour le voir en grand, le télécharger ou le partager.</p>
+          <p className="mt-0.5 text-[13px] font-medium text-paper/60 md:text-[15px]">Touche un mème pour le voir en grand, le télécharger ou le partager.</p>
         </div>
         {meId ? (
           <div className="flex gap-1.5" role="group" aria-label="Filtrer la galerie">
@@ -63,16 +63,16 @@ export function Gallery({
           </p>
         </div>
       ) : (
-        <ul className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+        <ul className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
           {items.map((g, i) => (
-            <li key={g.memeId} className="card relative p-1.5">
+            <li key={g.memeId} className="card relative p-1.5 md:p-2">
               <LazyMeme meme={g.meme} rootRef={scrollerRef} margin="300px 0px 300px 0px" className="aspect-square overflow-hidden rounded-[11px] bg-ink" />
               <div className="mt-1.5 flex items-center gap-1.5 px-0.5">
                 <Avatar avatar={g.authorAvatar} color={colors.get(g.authorId) ?? FALLBACK_COLOR} size={22} />
-                <span className={`min-w-0 flex-1 truncate text-[13px] leading-tight ${g.authorId === meId ? "font-extrabold" : "font-semibold"}`}>
+                <span className={`min-w-0 flex-1 truncate text-[13px] leading-tight md:text-[15px] ${g.authorId === meId ? "font-extrabold" : "font-semibold"}`}>
                   {g.authorId === meId ? "Toi" : g.authorName}
                 </span>
-                <span className="flex-none rounded-md bg-ink px-1.5 py-0.5 font-display text-[12px] font-extrabold tabular-nums leading-none text-paper">{g.points}</span>
+                <span className="flex-none rounded-md bg-ink px-1.5 py-0.5 font-display text-[12px] font-extrabold tabular-nums leading-none text-paper md:text-[14px]">{g.points}</span>
               </div>
               <button
                 type="button"
@@ -100,7 +100,7 @@ function FilterChip({ active, onClick, label, count }: { active: boolean; onClic
         sfx.play("tap");
         onClick();
       }}
-      className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border-2 px-3.5 font-display text-[14px] font-extrabold leading-none outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue ${
+      className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border-2 px-3.5 font-display text-[14px] font-extrabold md:min-h-[48px] md:px-4 md:text-[16px] leading-none outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue ${
         active ? "border-ink bg-fluo-yellow text-ink shadow-[2px_2px_0_0_rgba(0,0,0,0.55)]" : "border-paper/30 text-paper/75"
       }`}
     >

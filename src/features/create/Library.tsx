@@ -101,7 +101,7 @@ export function Library({ view, selectedId, onPick, onClose, clock }: LibraryPro
       className="bg-grid fixed inset-0 z-50 flex flex-col text-paper"
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
-      <div className="mx-auto flex w-full max-w-[860px] flex-none flex-col gap-2.5 px-4 pb-2 pt-3">
+      <div className="mx-auto flex w-full max-w-[860px] flex-none flex-col gap-2.5 px-4 pb-2 pt-3 md:px-6 lg:max-w-[1080px]">
         <div className="flex items-center gap-2">
           <Emoji id="joker" size={34} className="-rotate-6" />
           <h2 className="min-w-0 flex-1 font-display text-[1.4rem] font-extrabold leading-none">
@@ -164,16 +164,16 @@ export function Library({ view, selectedId, onPick, onClose, clock }: LibraryPro
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="mx-auto w-full max-w-[860px] px-4 pt-2" style={{ paddingBottom: "max(24px, env(safe-area-inset-bottom))" }}>
+        <div className="mx-auto w-full max-w-[860px] px-4 pt-2 md:px-6 lg:max-w-[1080px]" style={{ paddingBottom: "max(24px, env(safe-area-inset-bottom))" }}>
           {shown.length > 0 ? (
-            <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:grid-cols-3 md:grid-cols-4">
+            <div className="grid grid-cols-3 gap-x-2.5 gap-y-3 md:grid-cols-4 md:gap-x-4 md:gap-y-4 lg:grid-cols-5" data-testid="library-grid">
               {shown.map((it, i) => (
                 <TemplateCard
                   key={it.id}
                   templateId={it.id}
                   name={it.name}
                   index={i}
-                  eager={i < 6}
+                  eager={i < 9}
                   selected={it.id === selectedId}
                   badge={inHand.has(it.id) ? "Dans ta main" : undefined}
                   onPick={onPick}

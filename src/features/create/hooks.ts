@@ -15,6 +15,8 @@ export interface ViewportBox {
   shift: number;
   /** hauteur complète de l'élément */
   full: number;
+  /** largeur de l'élément */
+  w: number;
 }
 
 /**
@@ -48,8 +50,9 @@ export function useViewportBox(ref: RefObject<HTMLElement | null>): ViewportBox 
         h: Math.max(140, Math.round(bottom - top)),
         shift: Math.max(0, Math.round(top - r.top)),
         full: Math.round(r.height),
+        w: Math.round(r.width),
       };
-      const update = () => setBox((prev) => (prev && prev.h === next.h && prev.shift === next.shift && prev.full === next.full ? prev : next));
+      const update = () => setBox((prev) => (prev && prev.h === next.h && prev.shift === next.shift && prev.full === next.full && prev.w === next.w ? prev : next));
       if (first) {
         first = false;
         flushSync(update);

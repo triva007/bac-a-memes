@@ -92,20 +92,22 @@ export function JoinScreen({ view, join }: { view: RoomView; join: (name: string
 
   return (
     <main
-      className="mx-auto flex min-h-dvh w-full max-w-[460px] flex-col px-4"
+      className="mx-auto flex min-h-dvh w-full max-w-[460px] flex-col px-4 md:max-w-[38rem] md:justify-center md:px-6 md:pb-[6dvh] lg:landscape:max-w-[60rem]"
       style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
     >
       <div className="flex justify-center">
-        <Link href="/" aria-label="Bac à Mèmes, retour à l'accueil" className="rounded-xl outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue">
+        <Link href="/" aria-label="Bac à Mèmes, retour à l'accueil" className="rounded-xl outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue md:inline-flex md:min-h-[48px] md:items-center">
           <Logo variant="compact" as="div" />
         </Link>
       </div>
 
+      {/* paysage large : la salle à gauche, le profil à droite */}
+      <div className="lg:landscape:mt-6 lg:landscape:grid lg:landscape:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:landscape:items-start lg:landscape:gap-6">
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 26 }}
-        className="card mt-5 p-4"
+        className="card mt-5 p-4 md:mt-7 md:p-6 lg:landscape:mt-0"
         aria-labelledby="titre-salle"
       >
         <div className="flex items-end justify-between gap-3">
@@ -135,7 +137,7 @@ export function JoinScreen({ view, join }: { view: RoomView; join: (name: string
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 26, delay: 0.06 }}
-        className="card mt-4 p-4"
+        className="card mt-4 p-4 md:mt-5 md:p-6 lg:landscape:mt-0"
         aria-label="Ton profil"
       >
         <ProfileEditor
@@ -150,11 +152,12 @@ export function JoinScreen({ view, join }: { view: RoomView; join: (name: string
           }}
         />
       </motion.section>
+      </div>
 
       <div className="min-h-4 flex-1 sm:flex-none" />
 
       <div
-        className="sticky bottom-0 -mx-4 bg-gradient-to-t from-ink from-70% to-transparent px-4 pt-5"
+        className="sticky bottom-0 -mx-4 bg-gradient-to-t from-ink from-70% to-transparent px-4 pt-5 md:mx-auto md:w-full md:max-w-[26rem] md:bg-none md:px-0"
         style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
       >
         {error ? (

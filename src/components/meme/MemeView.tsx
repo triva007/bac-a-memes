@@ -28,6 +28,7 @@ import {
 import { flushSync } from "react-dom";
 import type { Meme, Sticker } from "@/lib/game/types";
 import { getMemeFields, getTemplate } from "@/lib/templates";
+import packManifest from "@/lib/templates/pack-manifest.json";
 import { CANVAS_W, FONT } from "./palette";
 import { Emo, MemeProvider, emojiSrc, type MemeContextValue } from "./kit-core";
 import { PersoRender, isPersoTemplateId, usePersoImage } from "./perso";
@@ -613,6 +614,9 @@ export function MemeView({
 
 // ------------------------------------------------------------------ TemplateThumb
 
+/** Image source des gabarits du pack intégré (`pack-*`) : id -> URL dans /public/pack. */
+const PACK_IMAGE_URL = new Map<string, string>((packManifest as { id: string; file: string }[]).map((e) => [e.id, `/pack/${encodeURIComponent(e.file)}`]));
+
 export interface TemplateThumbProps {
   /** id du registre ou "perso:<imageId>" */
   templateId: string;
@@ -620,6 +624,15 @@ export interface TemplateThumbProps {
   fit?: "width" | "contain";
   /** rend tout de suite, sans attendre que la vignette approche de l'écran */
   eager?: boolean;
+  /**
+   * Vignette « image seule » : pour les gabarits à légender (`pack-*`, `perso:*`),
+   * n'affiche que l'image, recadrée (`object-fit: cover`) pour remplir la cellule
+   * — sans le cadre blanc ni les bandeaux vides ; un GIF reste animé. La cellule
+   * (carrée, 4:5…) est dimensionnée par le parent. L'image n'existe dans la page
+   * que lorsqu'elle est à l'écran ou tout près : hors champ, un GIF ne tourne plus.
+   * Sans effet sur les autres gabarits (rendu normal).
+   */
+  imageOnly?: boolean;
   className?: string;
   style?: CSSProperties;
 }
@@ -628,31 +641,48 @@ export interface TemplateThumbProps {
  * Vignette d'un gabarit vide (placeholders visibles) pour le sélecteur.
  * Légère : le gabarit n'est monté que lorsque la vignette approche de l'écran.
  */
-export function TemplateThumb({ templateId, fit = "width", eager = false, className, style }: TemplateThumbProps) {
+export function TemplateThumb({ templateId, fit = "width", eager = false, imageOnly = false, className, style }: TemplateThumbProps) {
   const holder = useRef<HTMLDivElement>(null);
-  const [seen, setSeen] = useState(false);
+  const [seen, setSeen] = useState(eager);
   const tpl = getTemplate(templateId);
   const perso = usePersoImage(templateId);
   const height = tpl?.height ?? perso?.height ?? FALLBACK_H;
   const meme = useMemo<Meme>(() => ({ templateId, values: {}, stickers: [] }), [templateId]);
-  const show = eager || seen;
+  const coverUrl = imageOnly ? (perso?.url ?? PACK_IMAGE_URL.get(templateId) ?? null) : null;
+  const cover = coverUrl !== null;
+  const show = cover ? seen : eager || seen;
 
   useEffect(() => {
     const el = holder.current;
-    if (show || !el) return;
+    if (!el) return;
+    if (!cover && show) return;
     if (typeof IntersectionObserver === "undefined") {
       const t = setTimeout(() => setSeen(true), 0);
       return () => clearTimeout(t);
     }
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) setSeen(true);
+        const last = entries[entries.length - 1];
+        // image seule : on suit les entrées ET les sorties (un GIF hors champ est démonté)
+        if (cover) setSeen(last.isIntersecting);
+        else if (entries.some((e) => e.isIntersecting)) setSeen(true);
       },
-      { rootMargin: "300px" },
+      { rootMargin: cover ? "200px" : "300px" },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [show]);
+  }, [show, cover]);
+
+  if (cover) {
+    return (
+      <div ref={holder} className={className} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", background: "#1e1d40", ...style }} data-thumb-cover>
+        {show ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={coverUrl} alt="" aria-hidden draggable={false} decoding="async" loading={eager ? "eager" : "lazy"} className="thumb-cover" />
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div

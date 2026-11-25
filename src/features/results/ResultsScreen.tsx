@@ -111,15 +111,15 @@ function ResultsStage({ view, api, results }: PhaseProps & { results: Results })
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div ref={scrollerRef} data-scroller className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
-        <div className="mx-auto w-full max-w-5xl px-3 pb-5 pt-3 lg:grid lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start lg:gap-8 lg:px-6 lg:pt-6">
+        <div className="mx-auto w-full max-w-5xl px-3 pb-5 pt-3 md:max-w-[48rem] md:px-6 md:pt-5 lg:grid lg:max-w-[1180px] lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:items-start lg:gap-8 lg:pt-6">
           {/* ------------------------------------------------ les mèmes de la manche */}
           <section className="min-w-0">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-paper/55">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-paper/55 md:text-[14px]">
               Fin de la manche {view.round}/{view.totalRounds}
             </p>
             {winner ? (
               <>
-                <h2 className="mt-0.5 flex items-center gap-2 font-display text-[26px] font-extrabold leading-tight text-paper">
+                <h2 className="mt-0.5 flex items-center gap-2 font-display text-[26px] font-extrabold leading-tight text-paper md:text-[32px]">
                   <span>
                     Le <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">mème de la manche</span>
                   </span>
@@ -137,12 +137,12 @@ function ResultsStage({ view, api, results }: PhaseProps & { results: Results })
           {/* ------------------------------------------------ classement général */}
           <section ref={rankingRef} className="mt-6 min-w-0 lg:sticky lg:top-6 lg:mt-0">
             <div className="mb-2 flex items-end justify-between gap-2">
-              <h2 className="font-display text-[22px] font-extrabold leading-tight text-paper">Classement général</h2>
+              <h2 className="font-display text-[22px] font-extrabold leading-tight text-paper md:text-[26px]">Classement général</h2>
               <span className="pb-0.5 text-[12px] font-semibold text-paper/55">
                 {view.players.length} joueur{view.players.length > 1 ? "s" : ""}
               </span>
             </div>
-            <RankingList rows={rows} meId={meId} myRowRef={myRowRef} />
+            <RankingList rows={rows} meId={meId} myRowRef={myRowRef} className="tablet-zoom" />
           </section>
         </div>
       </div>
@@ -163,8 +163,8 @@ function WinnerCard({ entry, color, isMe, onOpen }: { entry: MemeResult; color: 
   return (
     <div className="mt-4">
       <motion.div
-        className="relative mx-auto"
-        style={{ width: `min(94%, calc(min(40dvh, 440px) / ${ratio}))`, rotate: -1.2 }}
+        className="relative mx-auto md:[--hero-max:560px] md:[--hero-vh:44dvh] lg:[--hero-vh:50dvh]"
+        style={{ width: `min(94%, calc(min(var(--hero-vh, 40dvh), var(--hero-max, 440px)) / ${ratio}))`, rotate: -1.2 }}
         initial={{ scale: 0.7, opacity: 0, rotate: -8 }}
         animate={{ scale: 1, opacity: 1, rotate: -1.2 }}
         transition={{ type: "spring", stiffness: 300, damping: 18 }}
@@ -199,7 +199,7 @@ function WinnerCard({ entry, color, isMe, onOpen }: { entry: MemeResult; color: 
         </motion.div>
       </motion.div>
 
-      <div className="mt-5 flex items-center justify-center gap-2.5">
+      <div className="tablet-zoom mt-5 flex items-center justify-center gap-2.5">
         <Avatar avatar={entry.authorAvatar} color={color} size={44} />
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase leading-none tracking-wide text-paper/55">Signé</p>
@@ -246,24 +246,24 @@ function Runners({
   return (
     <div className="mt-6">
       <div className="flex items-end justify-between gap-2">
-        <h3 className="font-display text-[19px] font-extrabold leading-tight text-paper">Et juste derrière</h3>
+        <h3 className="font-display text-[19px] font-extrabold leading-tight text-paper md:text-[22px]">Et juste derrière</h3>
         {entries.length > 2 ? (
-          <span className="flex items-center gap-1 pb-0.5 text-[12px] font-semibold text-paper/55 lg:hidden">
+          <span className="flex items-center gap-1 pb-0.5 text-[12px] font-semibold text-paper/55 md:hidden">
             fais défiler <ChevronIcon size={11} stroke={3.5} />
           </span>
         ) : null}
       </div>
       <div
         ref={stripRef}
-        className="no-scrollbar -mx-3 mt-2 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-3 pb-2 pt-1 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0"
+        className="no-scrollbar -mx-3 mt-2 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-3 pb-2 pt-1 md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0"
       >
         {entries.map((e, i) => (
-          <div key={e.memeId} className="card relative w-[46%] min-w-[150px] max-w-[220px] flex-none snap-start p-1.5 lg:w-auto lg:max-w-none">
+          <div key={e.memeId} className="card relative w-[46%] min-w-[150px] max-w-[220px] flex-none snap-start p-1.5 md:w-auto md:max-w-none md:p-2">
             <LazyMeme meme={e.meme} rootRef={stripRef} margin="0px 500px 0px 500px" className="aspect-square overflow-hidden rounded-[11px] bg-ink" />
             <div className="mt-1.5 flex items-center gap-1.5 px-0.5">
-              <span className="flex-none font-display text-[13px] font-extrabold tabular-nums text-ink/55">{ordinal(ranks[i])}</span>
+              <span className="flex-none font-display text-[13px] font-extrabold tabular-nums text-ink/55 md:text-[15px]">{ordinal(ranks[i])}</span>
               <Avatar avatar={e.authorAvatar} color={colorOf(e.authorId)} size={24} />
-              <span className={`min-w-0 flex-1 truncate text-[13px] leading-tight ${e.authorId === meId ? "font-extrabold" : "font-semibold"}`}>
+              <span className={`min-w-0 flex-1 truncate text-[13px] leading-tight md:text-[15px] ${e.authorId === meId ? "font-extrabold" : "font-semibold"}`}>
                 {e.authorId === meId ? "Toi" : e.authorName}
               </span>
               <span className="flex-none font-display text-[15px] font-extrabold tabular-nums">+{e.points}</span>
@@ -321,7 +321,7 @@ function Footer({
   return (
     <footer className="flex-none border-t-[3px] border-ink bg-ink-2" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
       <TimeBar left={left} total={LIMITS.resultsSeconds} className="!h-1.5 !rounded-none" />
-      <div className="mx-auto flex w-full max-w-5xl items-center gap-3 px-3 pt-2 lg:px-6">
+      <div className="tablet-zoom mx-auto flex w-full max-w-5xl items-center gap-3 px-3 pt-2 md:px-5 lg:px-6">
         {mine ? (
           <button
             type="button"

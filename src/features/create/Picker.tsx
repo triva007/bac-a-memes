@@ -50,14 +50,14 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
   const showFooter = hands.length > 1 || canJoker;
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-[720px] flex-col" data-testid="picker">
-      <header className="flex flex-none items-center gap-2 px-4 pb-2 pt-3">
+    <div className="mx-auto flex h-full w-full max-w-[720px] flex-col md:max-w-[50rem] lg:max-w-[1120px]" data-testid="picker">
+      <header className="flex flex-none items-center gap-2 px-4 pb-2 pt-3 md:px-6 md:pt-4">
         {onBack ? (
           <button type="button" onClick={onBack} className="btn btn-sm btn-paper !h-11 !min-h-11 !w-11 flex-none !p-0" aria-label="Revenir à mon mème sans changer de gabarit" data-testid="picker-back">
             <Icon name="left" size={20} stroke={3} />
           </button>
         ) : null}
-        <h2 className={`min-w-0 flex-1 whitespace-nowrap font-display font-extrabold leading-none text-paper ${onBack ? "text-[1.3rem]" : "text-[1.45rem]"}`}>
+        <h2 className={`min-w-0 flex-1 whitespace-nowrap font-display font-extrabold leading-none text-paper md:text-[1.6rem] ${onBack ? "text-[1.3rem]" : "text-[1.45rem]"}`}>
           {onBack ? "Change de " : "Choisis ton "}
           <Marker>gabarit</Marker>
         </h2>
@@ -75,45 +75,48 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
         ) : null}
       </header>
 
-      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5 pt-1">
-        {create?.theme ? <ThemeBanner theme={create.theme} style={{ marginBottom: 12, rotate: "-0.6deg" }} /> : null}
+      {/* téléphone : une colonne qui défile (grille puis idées) ; grand écran en paysage : idées dans une colonne à droite */}
+      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5 pt-1 md:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_16.5rem] lg:items-start lg:gap-x-7">
+        <div className="min-w-0">
+          {create?.theme ? <ThemeBanner theme={create.theme} style={{ marginBottom: 12, rotate: "-0.6deg" }} /> : null}
 
-        {hand.length > 0 ? (
-          <div key={handIndex} className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:grid-cols-3" data-testid="hand">
-            {hand.map((id, i) => (
-              <TemplateCard
-                key={id}
-                templateId={id}
-                name={templateName(id, view.images)}
-                index={i}
-                eager
-                deal
-                selected={id === selectedId}
-                badge={id === selectedId ? "Ton choix" : undefined}
-                disabled={locked}
-                onPick={onPick}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="card mx-auto mt-6 max-w-sm p-5 text-center">
-            <Emoji id="framed-picture" size={56} className="mx-auto" />
-            <p className="mt-2 font-display text-lg font-extrabold leading-tight">Cette main est vide</p>
-            <p className="mt-1 text-sm font-medium text-ink/70">Ses images ont été retirées du pack. {canGoNext ? "Relance pour en voir d'autres." : handIndex > 0 ? "Reviens à la main d'avant." : "Sors ton joker !"}</p>
-          </div>
-        )}
-        {removed > 0 && hand.length > 0 ? <p className="mt-3 text-center text-[0.8rem] font-medium text-muted">{removed > 1 ? `${removed} images ont été retirées` : "Une image a été retirée"} du pack entre-temps.</p> : null}
+          {hand.length > 0 ? (
+            <div key={handIndex} className={`grid gap-x-2.5 gap-y-3 md:grid-cols-4 md:gap-x-4 md:gap-y-4 ${hand.length <= 4 ? "grid-cols-2" : "grid-cols-3"}`} data-testid="hand">
+              {hand.map((id, i) => (
+                <TemplateCard
+                  key={id}
+                  templateId={id}
+                  name={templateName(id, view.images)}
+                  index={i}
+                  eager
+                  deal
+                  selected={id === selectedId}
+                  badge={id === selectedId ? "Ton choix" : undefined}
+                  disabled={locked}
+                  onPick={onPick}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="card mx-auto mt-6 max-w-sm p-5 text-center">
+              <Emoji id="framed-picture" size={56} className="mx-auto" />
+              <p className="mt-2 font-display text-lg font-extrabold leading-tight">Cette main est vide</p>
+              <p className="mt-1 text-sm font-medium text-ink/70">Ses images ont été retirées du pack. {canGoNext ? "Relance pour en voir d'autres." : handIndex > 0 ? "Reviens à la main d'avant." : "Sors ton joker !"}</p>
+            </div>
+          )}
+          {removed > 0 && hand.length > 0 ? <p className="mt-3 text-center text-[0.8rem] font-medium text-muted">{removed > 1 ? `${removed} images ont été retirées` : "Une image a été retirée"} du pack entre-temps.</p> : null}
+        </div>
 
         {situations.length > 0 ? (
-          <section className="mt-6" aria-label="Idées de situations">
+          <section className="mt-5 lg:sticky lg:top-0 lg:mt-0" aria-label="Idées de situations">
             <h3 className="flex items-center gap-1.5 font-display text-[1.05rem] font-extrabold leading-none text-paper">
               <Emoji id="light-bulb" size={22} />
               Besoin d&apos;inspi ?
             </h3>
             <p className="mt-1 text-[0.8rem] font-medium text-muted">Tes cartes situation — tu les retrouves dans l&apos;éditeur.</p>
-            <div className="no-scrollbar -mx-4 mt-1 flex snap-x gap-3.5 overflow-x-auto px-4 pb-3 pt-3">
+            <div className="no-scrollbar -mx-4 mt-1 flex snap-x gap-3.5 overflow-x-auto px-4 pb-3 pt-3 md:-mx-6 md:px-6 lg:mx-0 lg:flex-col lg:gap-4 lg:overflow-visible lg:px-1">
               {situations.map((s, i) => (
-                <SituationCard key={s} text={s} index={i} />
+                <SituationCard key={s} text={s} index={i} className="lg:w-full" />
               ))}
             </div>
           </section>
@@ -121,7 +124,7 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
       </div>
 
       {showFooter ? (
-        <footer className="flex flex-none items-stretch gap-2.5 border-t-2 border-paper/10 bg-ink/85 px-4 pt-2.5 backdrop-blur-sm" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
+        <footer className="flex flex-none items-stretch gap-2.5 border-t-2 border-paper/10 bg-ink/85 px-4 pt-2.5 backdrop-blur-sm md:justify-center md:gap-4 md:px-6 md:pt-3 md:[&>.flex-1]:max-w-[22rem]" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
           {hands.length > 1 && handIndex > 0 ? (
             <button type="button" onClick={prev} className="btn btn-paper flex-none !px-3" aria-label="Revenir à la main précédente">
               <Icon name="left" size={22} />

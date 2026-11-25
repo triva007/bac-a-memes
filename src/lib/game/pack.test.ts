@@ -3,7 +3,8 @@ import { PACK_CATEGORY, buildPool, dealHands, pickForcedTemplate } from "./deal"
 import { createRoom, defaultCategories } from "./engine";
 import { Sim } from "./testkit";
 import { makeRng } from "./rng";
-import type { TemplateMeta } from "./types";
+import { getCatalog } from "./catalog";
+import { DEFAULT_SETTINGS, type TemplateMeta } from "./types";
 
 const FIELDS = [
   { id: "haut", maxLength: 90 },
@@ -21,7 +22,7 @@ describe("pack intégré (catégorie memes)", () => {
   it("fournit environ la moitié de chaque main", () => {
     const pool = buildPool([...base, ...pack(12)], [], [], 6);
     for (let seed = 0; seed < 40; seed++) {
-      for (const handSize of [3, 4, 5, 6]) {
+      for (const handSize of [3, 4, 5, 6, 8, 10]) {
         const hands = dealHands({ pool, handSize, hands: 2, seen: {}, rand: makeRng("pack", seed) });
         for (const hand of hands) {
           expect(hand).toHaveLength(handSize);
@@ -53,6 +54,59 @@ describe("pack intégré (catégorie memes)", () => {
     const only = dealHands({ pool: buildPool([...base, ...pack(12)], [], [PACK_CATEGORY], 6), handSize: 6, hands: 1, seen: {}, rand: makeRng("pack", 3) })[0];
     expect(only.every(isPack)).toBe(true);
     expect(only).toHaveLength(6);
+  });
+});
+
+describe("main de 8 (défaut) à 10 (maximum) avec le vrai pack", () => {
+  const real = getCatalog();
+  const packIds = real.filter((t) => t.category === PACK_CATEGORY);
+
+  it("le pack réel suffit largement : main de 8 par défaut, borne haute à 10", () => {
+    expect(DEFAULT_SETTINGS.handSize).toBe(8);
+    expect(packIds.length).toBeGreaterThanOrEqual(150);
+    const sim = new Sim({ players: 2 });
+    sim.must(sim.host, { type: "settings", patch: { handSize: 99 } });
+    expect(sim.view(null).settings.handSize).toBe(10);
+    sim.must(sim.host, { type: "settings", patch: { handSize: 8 } });
+    expect(sim.view(null).settings.handSize).toBe(8);
+  });
+
+  it("8 puis 10 gabarits distincts par main, relances sans aucun doublon (4 relances max)", () => {
+    const pool = buildPool(real, [], defaultCategories(real), 10);
+    expect(pool.base.every((t) => t.category === PACK_CATEGORY)).toBe(true);
+    for (const handSize of [8, 10]) {
+      for (let seed = 0; seed < 25; seed++) {
+        const hands = dealHands({ pool, handSize, hands: 5, seen: {}, rand: makeRng("main", seed) });
+        expect(hands).toHaveLength(5);
+        for (const hand of hands) {
+          expect(hand).toHaveLength(handSize);
+          expect(new Set(hand).size).toBe(handSize);
+        }
+        expect(new Set(hands.flat()).size).toBe(handSize * 5);
+      }
+    }
+  });
+
+  it("en partie, réglages par défaut : 8 gabarits du pack par main, jamais revus sur 3 manches", () => {
+    const sim = new Sim({ players: 3, catalog: real, settings: { categories: defaultCategories(real) } });
+    sim.start();
+    const seen = new Set<string>();
+    for (let round = 1; round <= 3; round++) {
+      sim.waitUntil((r) => r.phase === "create" && r.round === round, 900_000);
+      const hands = sim.view("p1").create!.hands;
+      expect(hands).toHaveLength(1 + DEFAULT_SETTINGS.rerolls);
+      for (const hand of hands) {
+        expect(hand).toHaveLength(8);
+        expect(new Set(hand).size).toBe(8);
+        for (const id of hand) {
+          expect(id.startsWith("pack-")).toBe(true);
+          expect(seen.has(id)).toBe(false);
+          seen.add(id);
+        }
+      }
+      sim.submitAll();
+    }
+    expect(seen.size).toBe(8 * 3 * (1 + DEFAULT_SETTINGS.rerolls));
   });
 });
 

@@ -20,13 +20,14 @@ export function MessageScreen({
 }) {
   return (
     <main
-      className="mx-auto flex min-h-dvh w-full max-w-[460px] flex-col items-center px-5"
+      className="mx-auto flex min-h-dvh w-full max-w-[460px] flex-col items-center px-5 md:max-w-[34rem]"
+      data-player-ui
       style={{
         paddingTop: "max(1.25rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
       }}
     >
-      <Link href="/" aria-label="Bac à Mèmes, retour à l'accueil" className="rounded-xl outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue">
+      <Link href="/" aria-label="Bac à Mèmes, retour à l'accueil" className="rounded-xl outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue md:inline-flex md:min-h-[48px] md:items-center">
         <Logo variant="compact" as="div" />
       </Link>
       <div className="flex w-full flex-1 flex-col items-center justify-center py-8">
@@ -99,7 +100,7 @@ export function LoadingScreen({ code }: { code: string }) {
           <div className="h-3 w-24 animate-pulse rounded-full bg-paper/15" />
         </div>
       </div>
-      <div className="mx-auto flex w-full max-w-[560px] flex-1 flex-col gap-4 p-4">
+      <div className="mx-auto flex w-full max-w-[560px] flex-1 flex-col gap-4 p-4 md:max-w-[46rem]">
         <div className="h-36 animate-pulse rounded-[18px] bg-paper/10" />
         <div className="h-11 animate-pulse rounded-2xl bg-paper/10" />
         <div className="grid grid-cols-4 gap-3">

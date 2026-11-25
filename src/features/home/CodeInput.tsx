@@ -48,7 +48,7 @@ export function CodeInput({
             <div
               key={i}
               className={[
-                "grid h-[60px] w-[50px] place-items-center rounded-[14px] border-[3px] bg-white font-display text-[2.1rem] font-extrabold leading-none text-ink transition-shadow",
+                "grid h-[60px] w-[50px] place-items-center rounded-[14px] md:h-[72px] md:w-[62px] border-[3px] bg-white font-display text-[2.1rem] font-extrabold leading-none text-ink transition-shadow",
                 invalid ? "border-red-pen" : "border-ink",
                 isActive ? "shadow-[0_0_0_4px_var(--color-fluo-blue)]" : "",
               ].join(" ")}

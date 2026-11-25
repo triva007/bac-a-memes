@@ -85,10 +85,10 @@ function Actions({ initialCode }: { initialCode: string }) {
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-7">
+    <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start lg:gap-7">
       {/* ------------------------------------------------ rejoindre */}
       <div className="flex min-w-0 flex-col gap-6 lg:order-2">
-      <section className="card relative min-w-0 p-4 pb-2.5 lg:rotate-[0.6deg]" aria-labelledby="titre-rejoindre">
+      <section className="card relative min-w-0 p-4 pb-2.5 md:p-6 md:pb-4 lg:rotate-[0.6deg]" aria-labelledby="titre-rejoindre">
         <h2 id="titre-rejoindre" className="font-display text-[1.35rem] font-extrabold leading-tight">
           <span className="hl [--hl:var(--color-fluo-green)]">Rejoindre</span> une partie
         </h2>
@@ -125,7 +125,7 @@ function Actions({ initialCode }: { initialCode: string }) {
       </div>
 
       {/* ------------------------------------------------ créer */}
-      <section className="card relative min-w-0 p-4 lg:order-1 lg:-rotate-[0.6deg]" aria-labelledby="titre-creer">
+      <section className="card relative min-w-0 p-4 md:p-6 lg:order-1 lg:-rotate-[0.6deg]" aria-labelledby="titre-creer">
         <h2 id="titre-creer" className="font-display text-[1.35rem] font-extrabold leading-tight">
           <span className="hl [--hl:var(--color-fluo-pink)]">Créer</span> une partie
         </h2>
@@ -157,7 +157,7 @@ function Actions({ initialCode }: { initialCode: string }) {
 
 function ActionsSkeleton() {
   return (
-    <div className="grid gap-4 lg:grid-cols-2 lg:gap-7" aria-hidden>
+    <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:gap-7" aria-hidden>
       <div className="card h-[178px] animate-pulse opacity-60 lg:order-2" />
       <div className="card h-[382px] animate-pulse opacity-60 lg:order-1" />
     </div>
@@ -244,7 +244,7 @@ function HowItWorks() {
         Comment{" "}
         <span className="inline-block -rotate-2 rounded-lg border-[3px] border-ink bg-fluo-yellow px-2 text-ink shadow-[3px_3px_0_0_rgba(0,0,0,0.55)]">ça marche</span>
       </h2>
-      <ol className="grid gap-3.5 lg:grid-cols-3 lg:gap-5">
+      <ol className="grid gap-3.5 md:grid-cols-3 md:gap-4 lg:gap-5">
         {STEPS.map((s, i) => (
           <motion.li
             key={s.n}
@@ -252,7 +252,7 @@ function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.15 }}
             transition={{ delay: i * 0.08, type: "spring", stiffness: 260, damping: 22 }}
-            className={`card relative flex items-center gap-3 p-3 pl-4 lg:flex-col lg:items-start lg:p-4 ${s.tilt}`}
+            className={`card relative flex items-center gap-3 p-3 pl-4 md:flex-col md:items-start md:p-4 ${s.tilt}`}
           >
             <span
               className="absolute -left-2.5 -top-2.5 grid h-9 w-9 place-items-center rounded-full border-[3px] border-ink font-display text-[1.15rem] font-extrabold shadow-[2px_2px_0_0_var(--color-ink)]"
@@ -293,13 +293,14 @@ export function HomeScreen({ initialCode = "" }: { initialCode?: string }) {
   return (
     <MotionConfig reducedMotion="user">
       <main
-        className="mx-auto w-full max-w-[460px] flex-1 overflow-x-clip px-4 lg:max-w-[980px] lg:px-8"
+        className="mx-auto w-full max-w-[460px] flex-1 overflow-x-clip px-4 md:max-w-[40rem] md:px-6 lg:max-w-[62rem] lg:px-8"
+        data-player-ui
         style={{
           paddingTop: "max(1.1rem, env(safe-area-inset-top))",
           paddingBottom: "max(2rem, env(safe-area-inset-bottom))",
         }}
       >
-        <header className="mb-5 text-center lg:mb-8 lg:mt-4">
+        <header className="mb-5 text-center md:mb-7 md:mt-3 lg:mb-8 lg:mt-4">
           <Logo />
           <p className="mx-auto mt-3 max-w-[30ch] font-display text-[1.15rem] font-bold leading-tight text-paper lg:max-w-none lg:text-[1.45rem]">
             Le jeu de mèmes de la classe.{" "}

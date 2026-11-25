@@ -243,7 +243,7 @@ export function SettingsEditor({ view, draft }: { view: RoomView; draft: Setting
 
       <SectionCard title="Gabarits" hint={sameImage ? "En mode « Même image pour tous », pas de main ni de joker : le gabarit est tiré au sort pour toute la classe." : undefined}>
         <div className="divide-y-2 divide-ink/10">
-          <Stepper label="Taille de la main" hint="gabarits proposés à chacun" value={s.handSize} min={3} max={6} disabled={sameImage} onChange={(handSize) => draft.set({ handSize })} />
+          <Stepper label="Taille de la main" hint="gabarits proposés à chacun" value={s.handSize} min={3} max={10} disabled={sameImage} onChange={(handSize) => draft.set({ handSize })} />
           <Stepper label="Relances" hint="nouvelle main, par manche" value={s.rerolls} min={0} max={4} disabled={sameImage} onChange={(rerolls) => draft.set({ rerolls })} />
           <Stepper
             label="Jokers"

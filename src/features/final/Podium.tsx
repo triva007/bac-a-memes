@@ -113,7 +113,7 @@ function Ceremony({
 
   return (
     <div
-      className="mx-auto flex h-full min-h-[430px] w-full max-w-xl flex-col justify-center px-3 pb-3 pt-2"
+      className="tablet-zoom-tall mx-auto flex h-full min-h-[430px] w-full max-w-xl flex-col justify-center px-3 pb-3 pt-2"
       data-podium-revealed={revealed}
       data-podium-done={done || undefined}
     >
@@ -295,7 +295,7 @@ function Ceremony({
           <button
             type="button"
             onClick={() => setSkipped(true)}
-            className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-3 text-[13px] font-semibold text-paper/50 outline-none hover:text-paper focus-visible:ring-2 focus-visible:ring-fluo-blue"
+            className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-3 text-[13px] font-semibold text-paper/50 md:min-h-[48px] md:text-[15px] outline-none hover:text-paper focus-visible:ring-2 focus-visible:ring-fluo-blue"
           >
             Passer la cérémonie
             <ChevronIcon size={12} stroke={3} />

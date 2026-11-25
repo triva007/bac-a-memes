@@ -126,7 +126,7 @@ export function applySettingsPatch(
     ["rounds", 1, 8],
     ["createSeconds", 30, 240],
     ["voteSeconds", 6, 40],
-    ["handSize", 3, 6],
+    ["handSize", 3, 10],
     ["rerolls", 0, 4],
     ["jokers", 0, 5],
   ];

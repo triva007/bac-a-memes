@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { TemplateThumb } from "@/components/meme/MemeView";
 import { isPersoTemplateId } from "@/components/meme/perso";
 import { PERSO_PREFIX, type CustomImage } from "@/lib/game/types";
-import { getTemplate } from "@/lib/templates";
+import { getTemplate, isCaptionTemplate } from "@/lib/templates";
 import { Icon, keepFocus } from "./ui";
 
 /** Nom affiché sous une vignette. */
@@ -19,7 +19,7 @@ export function templateName(templateId: string, images: readonly CustomImage[])
   return getTemplate(templateId)?.name ?? "Gabarit";
 }
 
-const TILTS = [-1.2, 0.9, 0.7, -0.8, -0.6, 1.1];
+const TILTS = [-0.8, 0.6, 0.5, -0.6, -0.4, 0.7, 0.4, -0.7];
 
 export interface TemplateCardProps {
   templateId: string;
@@ -36,8 +36,14 @@ export interface TemplateCardProps {
   onPick: (templateId: string) => void;
 }
 
+/**
+ * Vignette compacte : l'image du mème en carré (recadrée, GIF animé), le nom
+ * dessous sur une ligne. Pensée pour tenir à 3 de front sur un téléphone de
+ * 360 px et à 4 de front sur tablette.
+ */
 export function TemplateCard({ templateId, name, index, selected = false, badge, eager = false, deal = false, disabled = false, onPick }: TemplateCardProps) {
   const tilt = TILTS[index % TILTS.length];
+  const image = isCaptionTemplate(templateId);
   return (
     <motion.button
       type="button"
@@ -46,32 +52,30 @@ export function TemplateCard({ templateId, name, index, selected = false, badge,
       data-template-card={templateId}
       aria-label={`Choisir le gabarit « ${name} »`}
       aria-pressed={selected}
-      initial={deal ? { opacity: 0, y: 46, rotate: tilt * 7, scale: 0.82 } : false}
+      initial={deal ? { opacity: 0, y: 36, rotate: tilt * 8, scale: 0.84 } : false}
       animate={{ opacity: 1, y: 0, rotate: tilt, scale: 1 }}
       whileTap={{ scale: 0.95, rotate: 0 }}
-      transition={{ type: "spring", stiffness: 430, damping: 27, delay: deal ? 0.05 + index * 0.06 : 0 }}
-      className={`relative flex h-full w-full touch-manipulation flex-col overflow-hidden rounded-[16px] border-[3px] border-ink bg-paper text-left text-ink shadow-hard-light outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue ${
+      transition={{ type: "spring", stiffness: 430, damping: 27, delay: deal ? 0.04 + index * 0.045 : 0 }}
+      className={`relative flex w-full min-w-0 touch-manipulation flex-col overflow-hidden rounded-[14px] border-[3px] border-ink bg-paper text-left text-ink shadow-[3px_3px_0_0_rgba(0,0,0,0.55)] outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue md:rounded-[16px] md:shadow-hard-light ${
         selected ? "ring-4 ring-fluo-green" : ""
       }`}
     >
-      <span className="relative block aspect-[8/7] w-full bg-ink-2">
-        <span className="absolute inset-[5px] block">
-          <TemplateThumb templateId={templateId} fit="contain" eager={eager} />
+      <span className="relative block aspect-square w-full bg-ink-2">
+        <span className={`absolute block ${image ? "inset-0" : "inset-[4px]"}`}>
+          <TemplateThumb templateId={templateId} fit="contain" eager={eager} imageOnly />
         </span>
         {badge ? (
-          <span className="absolute left-1.5 top-1.5 rounded-md border-2 border-ink bg-fluo-yellow px-1.5 py-0.5 font-display text-[0.66rem] font-extrabold uppercase leading-none tracking-wide text-ink">
+          <span className="absolute left-1 top-1 max-w-[calc(100%-0.5rem)] truncate rounded-md border-2 border-ink bg-fluo-yellow px-1 py-0.5 font-display text-[0.6rem] font-extrabold uppercase leading-none tracking-wide text-ink md:left-1.5 md:top-1.5 md:px-1.5 md:text-[0.66rem]">
             {badge}
           </span>
         ) : null}
         {selected ? (
-          <span className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full border-[2.5px] border-ink bg-fluo-green text-ink">
-            <Icon name="check" size={16} stroke={4} />
+          <span className="absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-[2.5px] border-ink bg-fluo-green text-ink md:bottom-1.5 md:right-1.5 md:h-7 md:w-7">
+            <Icon name="check" size={14} stroke={4} />
           </span>
         ) : null}
       </span>
-      <span className="flex flex-1 items-center border-t-[3px] border-ink px-2 py-1.5 font-display text-[0.82rem] font-extrabold leading-[1.15]">
-        <span className="line-clamp-2">{name}</span>
-      </span>
+      <span className="block truncate border-t-[3px] border-ink px-1.5 py-[5px] font-display text-[0.72rem] font-extrabold leading-tight md:px-2.5 md:py-1.5 md:text-[0.82rem]">{name}</span>
     </motion.button>
   );
 }

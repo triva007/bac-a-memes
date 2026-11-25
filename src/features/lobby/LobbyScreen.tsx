@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Emoji } from "@/components/ui/Emoji";
 import type { ApiFailure, GameApi, PhaseProps } from "@/features/game/props";
 import { lobbyPhrase, rotatingSeed } from "@/lib/content/phrases";
+import { useMediaQuery } from "@/features/vote/shared";
 import { LIMITS, type RoomView } from "@/lib/game/types";
 import { sfx } from "@/lib/sfx";
 import { InviteCard } from "./InviteCard";
@@ -24,11 +25,14 @@ const TABS: { id: TabId; label: string }[] = [
 ];
 
 function Tabs({
+  tabs,
   active,
   onChange,
   badges,
   baseId,
 }: {
+  /** onglets affichés (sur tablette, « Joueurs » sort des onglets : la liste est toujours visible à gauche) */
+  tabs: typeof TABS;
   active: TabId;
   onChange: (t: TabId) => void;
   badges: Partial<Record<TabId, number>>;
@@ -38,14 +42,14 @@ function Tabs({
     const dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     if (!dir) return;
     e.preventDefault();
-    const i = TABS.findIndex((t) => t.id === active);
-    const next = TABS[(i + dir + TABS.length) % TABS.length];
+    const i = Math.max(0, tabs.findIndex((t) => t.id === active));
+    const next = tabs[(i + dir + tabs.length) % tabs.length];
     onChange(next.id);
     requestAnimationFrame(() => document.getElementById(`${baseId}-tab-${next.id}`)?.focus());
   };
   return (
     <div role="tablist" aria-label="Sections du salon" onKeyDown={onKey} className="flex gap-0.5 rounded-[16px] border-[2.5px] border-paper/20 bg-ink-2 p-1">
-      {TABS.map((t) => {
+      {tabs.map((t) => {
         const selected = t.id === active;
         const badge = badges[t.id];
         return (
@@ -62,7 +66,7 @@ function Tabs({
               onChange(t.id);
             }}
             className={[
-              "relative flex min-h-[44px] flex-auto items-center justify-center gap-1 whitespace-nowrap rounded-[11px] px-1.5 font-display text-[0.8rem] font-extrabold leading-none outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue min-[390px]:text-[0.88rem] min-[430px]:text-[0.95rem]",
+              "relative flex min-h-[44px] flex-auto items-center justify-center gap-1 whitespace-nowrap rounded-[11px] px-1.5 font-display text-[0.8rem] font-extrabold leading-none outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue min-[390px]:text-[0.88rem] min-[430px]:text-[0.95rem] md:min-h-[50px]",
               selected ? "bg-fluo-yellow text-ink shadow-[2px_2px_0_0_rgba(0,0,0,0.55)]" : "text-paper/75 hover:bg-paper/10",
             ].join(" ")}
           >
@@ -138,7 +142,7 @@ function StartBar({ view, api, draft }: { view: RoomView; api: GameApi; draft: S
       className="relative z-10 flex-none border-t-[3px] border-black/40 bg-ink-2 px-3 pt-2.5"
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="mx-auto w-full max-w-[560px]">
+      <div className="mx-auto w-full max-w-[560px] md:max-w-[34rem]">
         {isHost ? (
           <>
             <p className="mb-2 min-h-[1.1rem] text-center text-[0.84rem] font-semibold leading-tight" role={error ? "alert" : undefined}>
@@ -182,6 +186,10 @@ export function LobbyScreen({ view, api }: PhaseProps) {
   const isHost = view.me?.isHost ?? false;
   const draft = useSettingsDraft(view.settings, api);
   const [tab, setTab] = useState<TabId>("joueurs");
+  /** tablette / ordinateur : deux colonnes — invitation + joueurs à gauche, réglages (noms, pack) à droite */
+  const twoCols = useMediaQuery("(min-width: 768px)");
+  const tabs = twoCols ? TABS.filter((t) => t.id !== "joueurs") : TABS;
+  const shownTab: TabId = twoCols && tab === "joueurs" ? "reglages" : tab;
   const baseId = useId();
   const scrollerRef = useRef<HTMLDivElement>(null);
   /** repère non collant placé juste avant la barre d'onglets (une barre collante ment sur son offsetTop) */
@@ -208,21 +216,26 @@ export function LobbyScreen({ view, api }: PhaseProps) {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div ref={scrollerRef} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="mx-auto grid w-full max-w-[560px] gap-3 px-3 pb-5 pt-3 lg:max-w-[1040px] lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start lg:gap-8 lg:px-6 lg:pt-6">
-          <div className="lg:sticky lg:top-6">
+        <div className="mx-auto grid w-full max-w-[560px] gap-3 px-3 pb-5 pt-3 md:max-w-[1180px] md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:items-start md:gap-5 md:px-5 md:pt-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-8 lg:px-6 lg:pt-6">
+          <div className="min-w-0">
             <InviteCard code={view.code} />
+            {twoCols ? (
+              <div className="mt-4" data-testid="lobby-players">
+                <PlayersPanel view={view} api={api} />
+              </div>
+            ) : null}
           </div>
 
           <div className="min-w-0">
             <div ref={anchorRef} aria-hidden />
-            <div className="sticky top-0 z-10 -mx-3 bg-ink/95 px-3 py-2 backdrop-blur-sm lg:top-0 lg:mx-0 lg:rounded-b-2xl lg:px-0 lg:pt-0">
-              <Tabs active={tab} onChange={changeTab} badges={badges} baseId={baseId} />
+            <div className="sticky top-0 z-10 -mx-3 bg-ink/95 px-3 py-2 backdrop-blur-sm md:mx-0 md:rounded-b-2xl md:px-0 md:pt-0">
+              <Tabs tabs={tabs} active={shownTab} onChange={changeTab} badges={badges} baseId={baseId} />
             </div>
-            <div id={`${baseId}-panel`} role="tabpanel" aria-labelledby={`${baseId}-tab-${tab}`} className="pt-1">
-              {tab === "joueurs" ? <PlayersPanel view={view} api={api} /> : null}
-              {tab === "reglages" ? isHost ? <SettingsEditor view={view} draft={draft} /> : <SettingsSummary view={view} /> : null}
-              {tab === "noms" ? <NamesPanel view={view} draft={isHost ? draft : null} /> : null}
-              {tab === "perso" ? <PersoPanel view={view} api={api} /> : null}
+            <div id={`${baseId}-panel`} role="tabpanel" aria-labelledby={`${baseId}-tab-${shownTab}`} className="pt-1">
+              {shownTab === "joueurs" ? <PlayersPanel view={view} api={api} /> : null}
+              {shownTab === "reglages" ? isHost ? <SettingsEditor view={view} draft={draft} /> : <SettingsSummary view={view} /> : null}
+              {shownTab === "noms" ? <NamesPanel view={view} draft={isHost ? draft : null} /> : null}
+              {shownTab === "perso" ? <PersoPanel view={view} api={api} /> : null}
             </div>
           </div>
         </div>
