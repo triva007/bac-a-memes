@@ -10,18 +10,20 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Emoji } from "@/components/ui/Emoji";
 import { podiumPhrase, type PodiumRank } from "@/lib/content/phrases";
 import { sfx } from "@/lib/sfx";
-import { Avatar, ChevronIcon, CountUp, fireConfetti, ordinal, pts, type Ranked } from "@/features/vote/shared";
+import { Avatar, ChevronIcon, CountUp, fireConfetti, ordinal, pts, useMediaQuery, type Ranked } from "@/features/vote/shared";
 
 const STEP_COLORS: Record<number, string> = {
   1: "var(--color-fluo-yellow)",
   2: "var(--color-fluo-blue)",
   3: "var(--color-fluo-orange)",
 };
-const STEP_HEIGHTS: Record<number, string> = {
-  1: "clamp(96px, 21dvh, 170px)",
-  2: "clamp(70px, 15dvh, 124px)",
-  3: "clamp(50px, 10.5dvh, 88px)",
-};
+/** part de la hauteur disponible sous l'avatar occupée par chaque marche */
+const STEP_SHARE: Record<number, number> = { 1: 1, 2: 0.72, 3: 0.5 };
+/** tailles (px) en mode normal / compact (écrans peu hauts) */
+const SIZES = {
+  normal: { first: 76, other: 58, names: 54, nameFirst: 18, nameOther: 15, digitFirst: 46, digitOther: 36 },
+  compact: { first: 60, other: 48, names: 46, nameFirst: 16, nameOther: 14, digitFirst: 34, digitOther: 28 },
+} as const;
 const DRUM_MS = 750;
 
 export function Podium({
@@ -58,6 +60,9 @@ function Ceremony({
   onReplay: () => void;
 }) {
   const reduce = useReducedMotion();
+  const sz = useMediaQuery("(max-height: 760px)") ? SIZES.compact : SIZES.normal;
+  /** place réservée au-dessus de chaque marche : nom + points + avatar */
+  const above = sz.names + 8 + sz.first + 8 + 4;
   const n = top.length;
   const [shown, setShown] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -107,13 +112,29 @@ function Ceremony({
   }
 
   return (
-    <div className="mx-auto flex min-h-full w-full max-w-xl flex-col px-3 pb-4 pt-3" data-podium-revealed={revealed} data-podium-done={done || undefined}>
-      <div className="flex-none text-center">
-        <p className="text-[12px] font-bold uppercase tracking-wider text-paper/55">Résultats définitifs</p>
-        <h2 className="font-display text-[30px] font-extrabold leading-tight text-paper">
-          Le <span className="hl text-ink">podium</span>
+    <div
+      className="mx-auto flex h-full min-h-[430px] w-full max-w-xl flex-col justify-center px-3 pb-3 pt-2"
+      data-podium-revealed={revealed}
+      data-podium-done={done || undefined}
+    >
+      <div className="relative flex-none text-center">
+        <h2 className="font-display text-[30px] font-extrabold leading-[44px] text-paper">
+          Le <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 leading-tight text-ink">podium</span>
         </h2>
-        <div className="mt-1 flex min-h-[44px] items-center justify-center" aria-live="polite">
+        {done && !reduce ? (
+          <button
+            type="button"
+            onClick={onReplay}
+            aria-label="Revoir la cérémonie"
+            className="absolute right-0 top-0 inline-flex h-11 items-center gap-1.5 rounded-lg px-2 text-[13px] font-semibold text-paper/60 outline-none hover:text-paper focus-visible:ring-2 focus-visible:ring-fluo-blue"
+          >
+            <svg aria-hidden width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v5h5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Revoir
+          </button>
+        ) : null}
+        <div className="flex min-h-[50px] items-center justify-center" aria-live="polite">
           <AnimatePresence mode="wait">
             {done ? (
               <motion.p
@@ -155,21 +176,22 @@ function Ceremony({
 
       {/* ------------------------------------------------ les marches */}
       <div
-        className={`mx-auto mt-auto grid w-full items-end gap-2 pt-3 ${n >= 3 ? "max-w-md grid-cols-3" : n === 2 ? "max-w-[300px] grid-cols-2" : "max-w-[170px] grid-cols-1"}`}
+        className={`mx-auto grid max-h-[430px] min-h-[200px] w-full flex-1 basis-0 grid-rows-[minmax(0,1fr)] gap-2 pt-2 ${n >= 3 ? "max-w-md grid-cols-3" : n === 2 ? "max-w-[300px] grid-cols-2" : "max-w-[170px] grid-cols-1"}`}
       >
         {columns.map((i) => {
           const r = top[i];
           const shownNow = isRevealed(i);
           const first = i === 0;
-          const size = first ? 76 : 58;
+          const size = first ? sz.first : sz.other;
           const isMe = me?.player.id === r.player.id;
           return (
-            <div key={r.player.id} className="flex min-w-0 flex-col items-center">
-              <div className="flex min-h-[44px] w-full flex-col items-center justify-end px-0.5 text-center">
+            <div key={r.player.id} className="flex h-full min-w-0 flex-col items-center justify-end">
+              <div className="flex w-full flex-none flex-col items-center justify-end px-0.5 text-center" style={{ height: sz.names }}>
                 {shownNow ? (
                   <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="w-full">
                     <p
-                      className={`line-clamp-2 break-words font-display font-extrabold leading-[1.1] ${first ? "text-[18px]" : "text-[15px]"} ${isMe ? "text-fluo-yellow" : "text-paper"}`}
+                      className={`line-clamp-2 break-words font-display font-extrabold leading-[1.1] ${isMe ? "text-fluo-yellow" : "text-paper"}`}
+                      style={{ fontSize: first ? sz.nameFirst : sz.nameOther }}
                     >
                       {r.player.name}
                       {isMe ? <span className="ml-1 text-[11px] font-bold">(toi)</span> : null}
@@ -181,7 +203,7 @@ function Ceremony({
                 ) : null}
               </div>
 
-              <div className="relative mt-2 flex items-end justify-center" style={{ height: size + 8 }}>
+              <div className="relative mt-2 flex flex-none items-end justify-center" style={{ height: size + 8 }}>
                 {shownNow ? (
                   <motion.div
                     className="relative"
@@ -192,12 +214,12 @@ function Ceremony({
                     <Avatar avatar={r.player.avatar} color={r.player.color} size={size} style={{ boxShadow: "3px 3px 0 0 rgba(0,0,0,0.55)" }} />
                     {r.rank === 1 ? (
                       <motion.span
-                        className="absolute -left-2 -top-7"
+                        className="absolute -left-2 -top-6"
                         initial={{ y: -30, opacity: 0, rotate: -50 }}
                         animate={{ y: 0, opacity: 1, rotate: -16 }}
                         transition={{ type: "spring", stiffness: 380, damping: 11, delay: 0.3 }}
                       >
-                        <Emoji id="crown" size={first ? 46 : 34} />
+                        <Emoji id="crown" size={Math.round(size * 0.6)} />
                       </motion.span>
                     ) : null}
                   </motion.div>
@@ -214,12 +236,12 @@ function Ceremony({
               </div>
 
               <motion.div
-                className="mt-1 flex w-full flex-col items-center rounded-t-2xl border-[3px] border-b-0 border-ink pt-1.5 text-ink shadow-[4px_0_0_0_rgba(0,0,0,0.4)]"
-                style={{ height: STEP_HEIGHTS[r.rank] ?? STEP_HEIGHTS[3], background: shownNow ? (STEP_COLORS[r.rank] ?? STEP_COLORS[3]) : "var(--color-paper-2)", transformOrigin: "50% 100%" }}
+                className="mt-1 flex w-full flex-none flex-col items-center overflow-hidden rounded-t-2xl border-[3px] border-b-0 border-ink pt-1.5 text-ink shadow-[4px_0_0_0_rgba(0,0,0,0.4)]"
+                style={{ height: `calc((100% - ${above}px) * ${STEP_SHARE[r.rank] ?? STEP_SHARE[3]})`, background: shownNow ? (STEP_COLORS[r.rank] ?? STEP_COLORS[3]) : "var(--color-paper-2)", transformOrigin: "50% 100%" }}
                 animate={shownNow ? { scaleY: [1, 0.9, 1.04, 1] } : { scaleY: 1 }}
                 transition={{ duration: 0.45 }}
               >
-                <span className="font-display font-extrabold leading-none tabular-nums" style={{ fontSize: first ? 46 : 36 }}>
+                <span className="font-display font-extrabold leading-none tabular-nums" style={{ fontSize: first ? sz.digitFirst : sz.digitOther }}>
                   {r.rank}
                 </span>
                 {r.tied ? <span className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-ink/65">ex æquo</span> : null}
@@ -231,12 +253,12 @@ function Ceremony({
       <div className="mx-auto h-[5px] w-full max-w-md flex-none rounded-full bg-ink shadow-[0_3px_0_0_rgba(0,0,0,0.4)]" aria-hidden />
 
       {/* ------------------------------------------------ après la cérémonie */}
-      <div className="mt-3 flex min-h-[112px] flex-none flex-col items-center gap-2.5">
+      <div className="mt-2.5 flex h-[96px] flex-none flex-col items-center justify-end gap-2">
         {done ? (
           <>
             {me ? (
               <motion.p
-                className="text-balance text-center text-[14px] font-semibold leading-snug text-paper/80"
+                className="line-clamp-2 text-balance text-center text-[14px] font-semibold leading-[1.25] text-paper/80"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.15 }}
@@ -249,15 +271,15 @@ function Ceremony({
                   </>
                 ) : (
                   <>
-                    Toi : <span className="font-extrabold text-fluo-yellow">{ordinal(me.rank)}</span> sur {total}, {me.player.score} {pts(me.player.score)}. Le podium, c&apos;est
-                    pour la revanche.
+                    Toi : <span className="font-extrabold text-fluo-yellow">{ordinal(me.rank)}</span> sur {total} avec {me.player.score} {pts(me.player.score)}. Le podium, ce
+                    sera pour la revanche.
                   </>
                 )}
               </motion.p>
             ) : null}
             <motion.button
               type="button"
-              className="btn w-full max-w-xs"
+              className="btn w-full max-w-xs flex-none"
               onClick={onNext}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -266,22 +288,12 @@ function Ceremony({
               Remise des diplômes
               <ChevronIcon size={16} stroke={4} />
             </motion.button>
-            <button
-              type="button"
-              onClick={onReplay}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold text-paper/60 outline-none hover:text-paper focus-visible:ring-2 focus-visible:ring-fluo-blue"
-            >
-              <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v5h5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Revoir la cérémonie
-            </button>
           </>
         ) : (
           <button
             type="button"
             onClick={() => setSkipped(true)}
-            className="mt-auto inline-flex min-h-[44px] items-center gap-1 rounded-lg px-3 text-[13px] font-semibold text-paper/50 outline-none hover:text-paper focus-visible:ring-2 focus-visible:ring-fluo-blue"
+            className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-3 text-[13px] font-semibold text-paper/50 outline-none hover:text-paper focus-visible:ring-2 focus-visible:ring-fluo-blue"
           >
             Passer la cérémonie
             <ChevronIcon size={12} stroke={3} />

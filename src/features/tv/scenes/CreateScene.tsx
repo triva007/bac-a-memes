@@ -57,6 +57,8 @@ export function CreateScene({ view, api }: PhaseProps) {
     }
   }, [players]);
 
+  const forcedHeight = useMemeHeight(create?.forcedTemplateId ?? "");
+
   if (!create) return null;
 
   const wall = players.filter((p) => p.connected || p.done);
@@ -72,10 +74,11 @@ export function CreateScene({ view, api }: PhaseProps) {
   const mainW = STAGE_W - PAD * 2 - LEFT_W - GAP;
   const phraseH = 76;
   const headH = forced ? 0 : theme ? 268 : 176;
-  const thumbColW = 540;
+  // gabarit imposé : un gabarit large prend plus de place en largeur, un gabarit haut en hauteur
+  const thumbColW = forcedHeight <= 900 ? 740 : forcedHeight <= 1100 ? 620 : 540;
   const wallW = forced ? mainW - thumbColW - 40 : mainW;
   const wallH = forced ? innerH - phraseH - 24 : innerH - headH - phraseH - 24 * 2;
-  const grid = packGrid(wall.length, wallW, wallH, 1.1, 210, 16);
+  const grid = packGrid(wall.length, wallW, wallH, 1.1, 270, 16);
   const pct = create.totalPlayers > 0 ? Math.min(1, create.submittedCount / create.totalPlayers) : 0;
 
   const wallNode = (
@@ -144,7 +147,7 @@ export function CreateScene({ view, api }: PhaseProps) {
           className="paper-seyes"
           style={{
             width: "100%",
-            flex: 1,
+            flex: "0 1 340px",
             minHeight: 0,
             padding: "18px 24px 18px 66px",
             color: INK,
@@ -348,8 +351,8 @@ function ForcedTemplate({ templateId, w, h }: { templateId: string; w: number; h
   return (
     <div style={{ width: w, height: h, flex: "none", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 0 }}>
       <div style={{ height: labelH, display: "flex", alignItems: "flex-start" }}>
-        <Chip color={FLUO.pink} size={32} style={{ transform: "rotate(-2deg)" }}>
-          <Emo id="framed-picture" size={40} /> Gabarit imposé{name ? ` : ${name}` : ""}
+        <Chip color={FLUO.pink} size={34} style={{ transform: "rotate(-2deg)" }}>
+          <Emo id="framed-picture" size={42} /> Même gabarit pour tous
         </Chip>
       </div>
       <div
@@ -368,7 +371,9 @@ function ForcedTemplate({ templateId, w, h }: { templateId: string; w: number; h
           <TemplateThumb templateId={templateId} fit="contain" eager />
         </div>
       </div>
-      <div style={{ ...HAND, height: footH - 16, fontSize: 40, lineHeight: 1.1, color: "#c9c6e6", marginTop: 16, whiteSpace: "nowrap" }}>Même image pour tous : à toi la meilleure légende.</div>
+      <div style={{ ...HAND, height: footH - 16, fontSize: (name?.length ?? 0) > 24 ? 36 : 44, lineHeight: 1.1, color: "#c9c6e6", marginTop: 16, whiteSpace: "nowrap", maxWidth: w, overflow: "hidden", textOverflow: "ellipsis" }}>
+        {name ? `« ${name} »` : "À toi la meilleure légende !"}
+      </div>
     </div>
   );
 }

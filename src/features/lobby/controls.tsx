@@ -111,7 +111,7 @@ export function Segmented<T extends string>({
                 onChange(o.value);
               }}
               className={[
-                "min-h-[40px] min-w-0 flex-1 rounded-[9px] px-1.5 text-[0.86rem] font-bold leading-tight outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue",
+                "min-h-[40px] min-w-0 flex-auto rounded-[9px] px-1.5 text-[0.82rem] font-bold leading-tight outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue",
                 selected ? "bg-ink text-paper" : "text-ink/70 hover:bg-ink/10",
               ].join(" ")}
             >

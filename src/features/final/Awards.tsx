@@ -67,13 +67,10 @@ export function Awards({
 
   return (
     <div className="mx-auto w-full max-w-5xl px-3 pb-6 pt-3 lg:px-6">
-      <div className="flex items-end justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="font-display text-[26px] font-extrabold leading-tight text-paper">
-            Remise des <span className="hl text-ink">diplômes</span>
-          </h2>
-          <p className="mt-0.5 text-[13px] font-medium text-paper/60">Touche un diplôme pour découvrir qui le décroche.</p>
-        </div>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="min-w-0 font-display text-[26px] font-extrabold leading-tight text-paper">
+          Les <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">diplômes</span>
+        </h2>
         <button
           type="button"
           className="btn btn-ghost btn-sm min-h-[44px] flex-none"
@@ -85,6 +82,7 @@ export function Awards({
           {allFlipped ? "Tout cacher" : "Tout retourner"}
         </button>
       </div>
+      <p className="mt-1 text-[13px] font-medium text-paper/60">Touche un diplôme pour découvrir qui le décroche.</p>
 
       <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {awards.map((award, i) => (
@@ -172,7 +170,7 @@ function Diploma({
           <div className="relative flex min-w-0 flex-1 flex-col py-3.5 pl-4 pr-2">
             <div className="flex items-center gap-1.5">
               <Emoji id={award.emoji} size={24} />
-              <span className="min-w-0 truncate text-[16px] font-black leading-tight" style={NEWS}>
+              <span className="line-clamp-2 min-w-0 text-[15.5px] font-black leading-[1.1]" style={NEWS}>
                 {award.title}
               </span>
             </div>

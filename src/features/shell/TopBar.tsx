@@ -12,11 +12,11 @@ import { sfx } from "@/lib/sfx";
 export const TOP_BAR_HEIGHT = 52;
 
 function phaseLabels(view: RoomView): { main: string; sub: string } {
-  const connected = view.players.filter((p) => p.connected).length;
+  const count = view.players.length;
   const round = `Manche ${view.round}/${view.totalRounds}`;
   switch (view.phase) {
     case "lobby":
-      return { main: "Salon", sub: `${connected} joueur${connected > 1 ? "s" : ""}` };
+      return { main: "Salon", sub: `${count} joueur${count > 1 ? "s" : ""}` };
     case "create":
       return { main: round, sub: "Création" };
     case "vote":
@@ -50,11 +50,11 @@ function Timer({ view, api }: { view: RoomView; api: GameApi }) {
       role="timer"
       aria-label={`Temps restant : ${whole} seconde${whole > 1 ? "s" : ""}`}
       className={[
-        "flex h-9 min-w-[58px] items-center justify-center gap-1 rounded-full border-[2.5px] px-2.5 font-display text-[1.1rem] font-extrabold tabular-nums leading-none",
+        "flex h-9 min-w-[46px] flex-none items-center justify-center gap-1 rounded-full border-[2.5px] px-2.5 font-display text-[1.1rem] font-extrabold tabular-nums leading-none min-[380px]:min-w-[58px]",
         alert ? "border-ink bg-red-pen text-white shadow-[2px_2px_0_0_rgba(0,0,0,0.6)]" : "border-paper/25 bg-ink-3 text-paper",
       ].join(" ")}
     >
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden className="flex-none opacity-80">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden className="flex-none opacity-80 max-[379px]:hidden">
         <circle cx="12" cy="13.5" r="7.5" />
         <path d="M12 9.5v4l2.5 2M9.5 3h5" />
       </svg>
@@ -108,7 +108,7 @@ export function TopBar({ view, api, onMenu }: { view: RoomView; api: GameApi; on
           {view.code}
         </div>
         <div className="min-w-0 flex-1 leading-none">
-          <div className="truncate font-display text-[0.98rem] font-extrabold text-paper">{labels.main}</div>
+          <div className="truncate font-display text-[0.92rem] font-extrabold text-paper min-[380px]:text-[0.98rem]">{labels.main}</div>
           <div className="mt-[3px] truncate text-[0.74rem] font-semibold text-muted">{labels.sub}</div>
         </div>
         <Timer view={view} api={api} />

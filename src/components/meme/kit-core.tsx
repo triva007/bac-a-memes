@@ -344,7 +344,7 @@ export function T(props: TProps) {
     fontStyle: italic ? "italic" : undefined,
     textShadow: shadow,
     color: fill,
-    opacity: isPlaceholder ? 0.42 : 1,
+    opacity: isPlaceholder ? (strokeColor ? 0.6 : 0.42) : 1,
     fontKerning: "normal",
   };
 

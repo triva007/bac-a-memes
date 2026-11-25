@@ -37,9 +37,9 @@ export function Leaderboard({ rows, width, height, animated }: { rows: BoardRow[
   }, [animated, stage]);
 
   const n = rows.length;
-  const cols = n <= 7 ? 1 : n <= 30 ? 2 : 3;
+  const cols = n <= 10 ? 1 : n <= 30 ? 2 : 3;
   const perCol = Math.max(1, Math.ceil(n / cols));
-  const maxRowH = cols === 1 ? 104 : cols === 2 ? 78 : 62;
+  const maxRowH = cols === 1 ? 108 : cols === 2 ? 92 : 66;
   const slot = Math.min(maxRowH, height / perCol);
   const gap = Math.max(5, Math.round(slot * 0.15));
   const h = Math.floor(slot - gap);

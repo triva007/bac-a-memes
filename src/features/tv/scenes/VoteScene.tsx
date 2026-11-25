@@ -10,7 +10,7 @@ import { sfx } from "@/lib/sfx";
 import { confettiCannons, confettiPop } from "../confetti";
 import { useCues } from "../hooks";
 import { PAD, STAGE_W, useStage } from "../stage";
-import { Avatar, CountUp, DISPLAY, Emo, FLUO, HAND, INK, MemeFrame, PAPER, fitSize, hard, plural } from "../ui";
+import { Avatar, CountUp, DISPLAY, Emo, FLUO, HAND, INK, MemeFrame, PAPER, fitSize, hard } from "../ui";
 
 const PANEL_W = 470;
 const GAP = 48;
@@ -232,7 +232,6 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
   const phrase = revealPhrase(ratio, result.memeId);
   const author = view.players.find((p) => p.id === result.authorId);
   const color = author?.color ?? FLUO.blue;
-  const votes = result.breakdown.reduce((a, b) => a + b, 0);
   const best = Math.max(...result.breakdown);
   const tender = tier === 0;
 
@@ -250,12 +249,12 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
   ]);
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 18 }}>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        style={{ ...HAND, fontSize: 60, lineHeight: 1, color: FLUO.yellow, marginTop: 4 }}
+        style={{ ...HAND, fontSize: 58, lineHeight: 1, color: FLUO.yellow, flex: "none" }}
       >
         Un mème signé…
       </motion.div>
@@ -265,15 +264,15 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
         initial={{ opacity: 0, scale: 0.2, rotate: -18 }}
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 13, delay: 0.7 }}
-        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "100%" }}
+        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, width: "100%", flex: "none" }}
       >
-        <Avatar avatar={result.authorAvatar} color={color} size={210} />
+        <Avatar avatar={result.authorAvatar} color={color} size={176} />
         <div
           style={{
             ...DISPLAY,
             maxWidth: "100%",
             padding: "6px 26px 10px",
-            fontSize: fitSize(result.authorName, [[7, 88], [10, 70], [13, 56], [99, 46]]),
+            fontSize: fitSize(result.authorName, [[7, 78], [10, 66], [13, 54], [99, 44]]),
             lineHeight: 1.1,
             color: INK,
             background: PAPER,
@@ -300,7 +299,8 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
           display: "flex",
           alignItems: "baseline",
           gap: 14,
-          padding: "8px 30px 14px",
+          flex: "none",
+          padding: "4px 28px 10px",
           color: INK,
           background: tone.color,
           border: `6px solid ${INK}`,
@@ -310,14 +310,14 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
         }}
         aria-label={`${result.points} points`}
       >
-        <span style={{ fontSize: 130, lineHeight: 1 }}>
+        <span style={{ fontSize: 108, lineHeight: 1 }}>
           <CountUp to={result.points} prefix="+" duration={0.75} delay={1.05} />
         </span>
-        <span style={{ fontSize: 48 }}>{result.points > 1 ? "points" : "point"}</span>
+        <span style={{ fontSize: 44 }}>{result.points > 1 ? "points" : "point"}</span>
       </motion.div>
 
       {/* répartition des notes */}
-      <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
+      <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center", flex: "none" }}>
         {VOTE_OPTIONS.map((o, i) => {
           const n = result.breakdown[o.score];
           const top = n > 0 && n === best;
@@ -332,8 +332,8 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 2,
-                padding: "10px 0 8px",
+                gap: 0,
+                padding: "6px 0 6px",
                 color: INK,
                 background: top ? FLUO.yellow : PAPER,
                 border: `4px solid ${INK}`,
@@ -343,8 +343,8 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
               }}
               aria-label={`${o.label} : ${n}`}
             >
-              <Emo id={o.emoji} size={62} style={n === 0 ? { filter: "grayscale(0.7)", opacity: 0.6 } : undefined} />
-              <span style={{ ...DISPLAY, fontSize: 50, lineHeight: 1, opacity: n === 0 ? 0.45 : 1 }}>{n}</span>
+              <Emo id={o.emoji} size={54} style={n === 0 ? { filter: "grayscale(0.7)", opacity: 0.6 } : undefined} />
+              <span style={{ ...DISPLAY, fontSize: 44, lineHeight: 1, opacity: n === 0 ? 0.45 : 1 }}>{n}</span>
             </motion.div>
           );
         })}
@@ -359,9 +359,11 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
         style={{
           position: "relative",
           width: "100%",
-          flex: 1,
+          flex: "0 1 300px",
           minHeight: 0,
-          padding: "30px 22px 16px 62px",
+          padding: "26px 22px 12px 62px",
+          marginTop: 8,
+          overflow: "visible",
           color: INK,
           border: `5px solid ${INK}`,
           borderRadius: 26,
@@ -394,10 +396,6 @@ function RevealPanel({ result, view }: { result: MemeResult; view: RoomView }) {
         <div style={{ ...HAND, fontSize: fitSize(phrase, [[40, 52], [60, 46], [85, 40], [999, 34]]), lineHeight: 1.05 }}>{phrase}</div>
         {tender ? <Hearts /> : null}
       </motion.div>
-
-      <div style={{ fontSize: 24, fontWeight: 600, color: "#9f9dc6", flex: "none" }} aria-hidden>
-        {plural(votes, "vote", "votes")}
-      </div>
     </div>
   );
 }

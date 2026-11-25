@@ -4,7 +4,7 @@
  * Briques communes aux écrans vote / révélation / classement / podium :
  * avatar, compteur animé, barre de temps, confettis, rangs, montage paresseux.
  */
-import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type RefObject } from "react";
 import { useReducedMotion } from "motion/react";
 import { Emoji } from "@/components/ui/Emoji";
 import { CANVAS_W } from "@/components/meme/palette";
@@ -286,6 +286,19 @@ export function useNearViewport<T extends Element>(
     return () => io.disconnect();
   }, [ref, rootRef, margin]);
   return near;
+}
+
+/** Vrai si la requête média correspond (faux côté serveur). */
+export function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
 }
 
 // ---------------------------------------------------------------- icônes

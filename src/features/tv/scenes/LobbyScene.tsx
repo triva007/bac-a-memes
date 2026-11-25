@@ -44,16 +44,16 @@ export function LobbyScene({ view, api }: PhaseProps) {
   const headerH = 168;
   const footerH = 78;
   const gridH = innerH - headerH - footerH - 28 * 2;
-  const grid = packGrid(players.length, rightW, gridH, 1.1, 236, 16);
+  const grid = packGrid(players.length, rightW, gridH, 1.1, 280, 16);
 
   // carte « rejoins » : le QR prend la place restante
   const code = view.code;
   const tileGap = 14;
-  const tileW = Math.min(150, Math.floor((LEFT_W - CARD_PAD * 2 - tileGap * (code.length - 1)) / code.length));
-  const fixedH = 96 + 128 + 44 + Math.round(tileW * 1.16) + 3 * 22;
+  const tileW = Math.min(136, Math.floor((LEFT_W - CARD_PAD * 2 - tileGap * (code.length - 1)) / code.length));
+  const fixedH = 84 + 116 + 44 + 8 + Math.round(tileW * 1.16) + 3 * 20;
   const qrRoom = innerH - CARD_PAD * 2 - fixedH;
   const stacked = qrRoom > 560;
-  const qrSize = Math.max(180, Math.floor(stacked ? Math.min(qrRoom - 86, LEFT_W - CARD_PAD * 2 - 20) : Math.min(qrRoom - 12, 400)));
+  const qrSize = Math.max(180, Math.floor(stacked ? Math.min(qrRoom - 86, LEFT_W - CARD_PAD * 2 - 20) : Math.min(qrRoom - 14, 420)));
   const joinUrl = origin ? `${origin}/r/${code}` : "";
   const mode = MODE_INFO[view.settings.mode] ?? MODE_INFO.classique;
 
@@ -74,21 +74,21 @@ export function LobbyScene({ view, api }: PhaseProps) {
           boxShadow: hard(12),
           display: "flex",
           flexDirection: "column",
-          gap: 22,
+          gap: 20,
         }}
       >
-        <h1 style={{ ...DISPLAY, fontSize: 80, lineHeight: 1.2, height: 96, margin: 0, whiteSpace: "nowrap" }}>
+        <h1 style={{ ...DISPLAY, fontSize: 72, lineHeight: 1.16, height: 84, margin: 0, whiteSpace: "nowrap" }}>
           Rejoins la{" "}
           <span style={{ background: `linear-gradient(transparent 50%, ${FLUO.pink} 50%)`, padding: "0 0.1em" }}>partie</span> !
         </h1>
 
-        <div style={{ height: 128 }}>
+        <div style={{ height: 116 }}>
           <StepLabel n={1}>Sur ton téléphone, va sur</StepLabel>
           <div
             style={{
               ...DISPLAY,
-              marginTop: 6,
-              fontSize: fitSize(host, [[14, 68], [18, 58], [22, 50], [26, 43], [32, 36], [99, 28]]),
+              marginTop: 2,
+              fontSize: fitSize(host, [[14, 64], [18, 56], [22, 50], [26, 43], [32, 36], [99, 28]]),
               lineHeight: 1.2,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -230,11 +230,11 @@ export function LobbyScene({ view, api }: PhaseProps) {
           </Chip>
           <Chip size={32} style={{ transform: "rotate(-0.6deg)" }}>
             <Emo id="stopwatch" size={40} />
-            {view.settings.createSeconds} s par mème
+            {view.settings.createSeconds} s
           </Chip>
           {hostPlayer ? (
-            <div style={{ ...HAND, fontSize: 44, lineHeight: 1, color: "#c9c6e6", marginLeft: 6, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {hostPlayer.name} lance quand tout le monde est là
+            <div style={{ ...HAND, fontSize: fitSize(hostPlayer.name, [[6, 44], [10, 38], [99, 31]]), lineHeight: 1, color: "#c9c6e6", marginLeft: 6, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {hostPlayer.name} lance la partie
             </div>
           ) : null}
         </div>

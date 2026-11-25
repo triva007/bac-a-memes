@@ -201,7 +201,7 @@ export function RevealPanel({
           <>
             {tier === 0 ? (
               <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 12 }} className="flex-none">
-                <Emoji id={votes === 0 ? "cricket" : "people-hugging"} size={30} />
+                <Emoji id={votes === 0 ? "cricket" : "teddy-bear"} size={32} />
               </motion.span>
             ) : null}
             <motion.p

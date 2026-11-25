@@ -121,7 +121,7 @@ function ResultsStage({ view, api, results }: PhaseProps & { results: Results })
               <>
                 <h2 className="mt-0.5 flex items-center gap-2 font-display text-[26px] font-extrabold leading-tight text-paper">
                   <span>
-                    Le <span className="hl text-ink">mème de la manche</span>
+                    Le <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">mème de la manche</span>
                   </span>
                 </h2>
                 <WinnerCard entry={winner} color={colorOf(winner.authorId)} isMe={winner.authorId === meId} onOpen={() => setOpen(0)} />
@@ -164,7 +164,7 @@ function WinnerCard({ entry, color, isMe, onOpen }: { entry: MemeResult; color: 
     <div className="mt-4">
       <motion.div
         className="relative mx-auto"
-        style={{ width: `min(100%, calc(min(44dvh, 460px) / ${ratio}))`, rotate: -1.2 }}
+        style={{ width: `min(94%, calc(min(40dvh, 440px) / ${ratio}))`, rotate: -1.2 }}
         initial={{ scale: 0.7, opacity: 0, rotate: -8 }}
         animate={{ scale: 1, opacity: 1, rotate: -1.2 }}
         transition={{ type: "spring", stiffness: 300, damping: 18 }}
@@ -329,14 +329,14 @@ function Footer({
             aria-label={`Tu es ${ordinal(mine.rank)}${mine.tied ? " ex æquo" : ""} avec ${mine.player.score} ${pts(mine.player.score)}. Voir ma ligne dans le classement.`}
             className="flex min-h-[52px] min-w-0 flex-1 items-center gap-2 rounded-xl text-left outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue"
           >
-            <Avatar avatar={mine.player.avatar} color={mine.player.color} size={40} />
+            <Avatar avatar={mine.player.avatar} color={mine.player.color} size={38} />
             <span className="min-w-0">
-              <span className="block font-display text-[19px] font-extrabold leading-none text-paper">
+              <span className="block whitespace-nowrap font-display text-[19px] font-extrabold leading-none text-paper">
                 {ordinal(mine.rank)}
                 {mine.tied ? <span className="ml-1 text-[11px] font-bold text-paper/60">ex æquo</span> : null}
               </span>
-              <span className="mt-1 block truncate text-[13px] font-semibold leading-none text-paper/70">
-                <span className="tabular-nums text-paper">{mine.player.score}</span> {pts(mine.player.score)}
+              <span className="mt-1 block whitespace-nowrap text-[13px] font-semibold leading-none text-paper/70">
+                <span className="tabular-nums text-paper">{mine.player.score}</span> pts
                 {mine.gain > 0 ? <span className="ml-1.5 font-extrabold tabular-nums text-fluo-green">+{mine.gain}</span> : null}
               </span>
             </span>
@@ -347,7 +347,7 @@ function Footer({
 
         {isHost ? (
           <div className="flex flex-none flex-col items-end">
-            <button type="button" className={`btn ${isLastRound ? "btn-pink" : "btn-green"}`} onClick={skip} disabled={disabled}>
+            <button type="button" className={`btn px-4 text-[1rem] ${isLastRound ? "btn-pink" : "btn-green"}`} onClick={skip} disabled={disabled}>
               {busy ? "C'est parti…" : isLastRound ? "Voir le podium" : "Manche suivante"}
               {seconds != null && !busy ? <span className="text-[13px] font-bold tabular-nums opacity-60">{seconds}</span> : null}
             </button>

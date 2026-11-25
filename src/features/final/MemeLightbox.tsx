@@ -159,6 +159,7 @@ export function MemeLightbox({
       if (typeof navigator.canShare === "function" && navigator.canShare(data)) {
         try {
           await navigator.share(data);
+          say("C'est parti !", "ok");
         } catch (e) {
           const name = (e as { name?: string })?.name;
           if (name === "AbortError") return; // partage annulé par le joueur
@@ -239,26 +240,32 @@ export function MemeLightbox({
       <div className="mx-auto mt-3 w-full max-w-xl flex-none px-3">
         <div className="card px-3 pb-3 pt-2.5">
           <div className="flex items-center gap-2.5">
-            <Avatar avatar={item.authorAvatar} color={author?.color ?? FALLBACK_COLOR} size={44} />
+            <Avatar avatar={item.authorAvatar} color={author?.color ?? FALLBACK_COLOR} size={40} />
             <div className="min-w-0 flex-1">
               <p className="truncate font-display text-[19px] font-extrabold leading-tight">
                 {item.authorName}
                 {meId && item.authorId === meId ? <span className="ml-1.5 text-[13px] font-bold text-ink/55">(toi)</span> : null}
               </p>
-              <div className="mt-0.5 flex items-center gap-2 text-[12px] font-semibold text-ink/60">
-                <span>Manche {item.round}</span>
-                <span aria-hidden>·</span>
+              <div className="mt-0.5 flex items-center gap-2.5 whitespace-nowrap text-[12px] font-semibold text-ink/60">
+                <span aria-label={`Manche ${item.round}`}>
+                  <span className="min-[400px]:hidden" aria-hidden>
+                    M{item.round}
+                  </span>
+                  <span className="max-[399px]:hidden" aria-hidden>
+                    Manche {item.round}
+                  </span>
+                </span>
                 <span className="flex items-center gap-1.5" aria-label="Notes reçues">
                   {VOTE_OPTIONS.map((o) => (
                     <span key={o.score} className="inline-flex items-center gap-0.5 tabular-nums" aria-label={`${o.label} : ${item.breakdown[o.score]}`}>
-                      <Emoji id={o.emoji} size={15} />
+                      <Emoji id={o.emoji} size={14} />
                       {item.breakdown[o.score]}
                     </span>
                   ))}
                 </span>
               </div>
             </div>
-            <div className="flex-none rotate-3 rounded-xl border-[3px] border-ink bg-fluo-yellow px-2.5 py-1 text-center shadow-[3px_3px_0_0_var(--color-ink)]">
+            <div className="flex-none rotate-3 rounded-xl border-[3px] border-ink bg-fluo-yellow px-2 py-1 text-center shadow-[3px_3px_0_0_var(--color-ink)]">
               <span className="block font-display text-[22px] font-extrabold leading-none tabular-nums">{item.points}</span>
               <span className="block text-[9px] font-bold uppercase leading-tight tracking-wide">{pts(item.points)}</span>
             </div>

@@ -44,7 +44,7 @@ function Tabs({
     requestAnimationFrame(() => document.getElementById(`${baseId}-tab-${next.id}`)?.focus());
   };
   return (
-    <div role="tablist" aria-label="Sections du salon" onKeyDown={onKey} className="flex gap-1 rounded-[16px] border-[2.5px] border-paper/20 bg-ink-2 p-1">
+    <div role="tablist" aria-label="Sections du salon" onKeyDown={onKey} className="flex gap-0.5 rounded-[16px] border-[2.5px] border-paper/20 bg-ink-2 p-1">
       {TABS.map((t) => {
         const selected = t.id === active;
         const badge = badges[t.id];
@@ -62,14 +62,14 @@ function Tabs({
               onChange(t.id);
             }}
             className={[
-              "relative flex min-h-[44px] min-w-0 flex-1 items-center justify-center gap-1 rounded-[11px] px-1 font-display text-[0.86rem] font-extrabold leading-none outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue min-[400px]:text-[0.95rem]",
+              "relative flex min-h-[44px] flex-auto items-center justify-center gap-1 whitespace-nowrap rounded-[11px] px-1.5 font-display text-[0.8rem] font-extrabold leading-none outline-none transition-colors focus-visible:ring-4 focus-visible:ring-fluo-blue min-[390px]:text-[0.88rem] min-[430px]:text-[0.95rem]",
               selected ? "bg-fluo-yellow text-ink shadow-[2px_2px_0_0_rgba(0,0,0,0.55)]" : "text-paper/75 hover:bg-paper/10",
             ].join(" ")}
           >
-            <span className="truncate">{t.label}</span>
+            <span>{t.label}</span>
             {badge ? (
               <span
-                className={`flex-none rounded-full px-[5px] py-[2px] text-[0.68rem] font-extrabold tabular-nums leading-none ${selected ? "bg-ink text-paper" : "bg-paper/20 text-paper"}`}
+                className={`flex-none rounded-full px-[5px] py-[2px] font-sans text-[0.66rem] font-extrabold tabular-nums leading-none ${selected ? "bg-ink text-paper" : "bg-paper/20 text-paper"}`}
               >
                 {badge}
               </span>
@@ -184,15 +184,16 @@ export function LobbyScreen({ view, api }: PhaseProps) {
   const [tab, setTab] = useState<TabId>("joueurs");
   const baseId = useId();
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const tabsRef = useRef<HTMLDivElement>(null);
+  /** repère non collant placé juste avant la barre d'onglets (une barre collante ment sur son offsetTop) */
+  const anchorRef = useRef<HTMLDivElement>(null);
 
   const changeTab = (next: TabId) => {
     setTab(next);
     // si l'en-tête est déjà sorti de l'écran, le nouvel onglet commence juste sous la barre d'onglets
     const scroller = scrollerRef.current;
-    const anchor = tabsRef.current;
+    const anchor = anchorRef.current;
     if (scroller && anchor) {
-      const top = anchor.offsetTop - 8;
+      const top = anchor.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
       if (scroller.scrollTop > top) scroller.scrollTop = top;
     }
   };
@@ -213,7 +214,8 @@ export function LobbyScreen({ view, api }: PhaseProps) {
           </div>
 
           <div className="min-w-0">
-            <div ref={tabsRef} className="sticky top-0 z-10 -mx-3 bg-ink/95 px-3 py-2 backdrop-blur-sm lg:top-0 lg:mx-0 lg:rounded-b-2xl lg:px-0 lg:pt-0">
+            <div ref={anchorRef} aria-hidden />
+            <div className="sticky top-0 z-10 -mx-3 bg-ink/95 px-3 py-2 backdrop-blur-sm lg:top-0 lg:mx-0 lg:rounded-b-2xl lg:px-0 lg:pt-0">
               <Tabs active={tab} onChange={changeTab} badges={badges} baseId={baseId} />
             </div>
             <div id={`${baseId}-panel`} role="tabpanel" aria-labelledby={`${baseId}-tab-${tab}`} className="pt-1">

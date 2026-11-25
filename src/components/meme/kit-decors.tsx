@@ -954,8 +954,8 @@ export function ExamHall({ x, y, w, h, floorY = 0.42, time = "13:59", sign = "SI
   return (
     <Room x={x} y={y} w={w} h={h} floorY={floorY} wall={["#f1ece1", "#e3dccd"]} band="#b9c7d6" bandH={0.08} floor="wood" floorColors={["#dcb277", "#c39355"]} light="right" vignette={0.26}>
       <Svg w={w} h={h}>
-        <rect x={w * 0.2} y={fy * 0.2} width={w * 0.42} height={fy * 0.3} rx={8} fill="#14132b" />
-        <text x={w * 0.41} y={fy * 0.4} textAnchor="middle" fontFamily={FONT.display} fontWeight={800} fontSize={Math.min(fy * 0.13, w * 0.026)} fill="#ffe94a" letterSpacing={2}>
+        <rect x={w * 0.12} y={fy * 0.2} width={w * 0.56} height={fy * 0.3} rx={8} fill="#14132b" />
+        <text x={w * 0.4} y={fy * 0.4} textAnchor="middle" fontFamily={FONT.display} fontWeight={800} fontSize={Math.min(fy * 0.13, w * 0.025)} fill="#ffe94a" letterSpacing={1}>
           {sign}
         </text>
         {desks}

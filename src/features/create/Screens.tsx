@@ -67,7 +67,7 @@ export function WaitingScreen({ view, api }: { view: RoomView; api: GameApi }) {
   return (
     <div className="mx-auto flex h-full w-full max-w-[600px] flex-col" data-testid="waiting">
       <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-5">
-        <motion.div initial={{ opacity: 0, y: 14, rotate: -3 }} animate={{ opacity: 1, y: 0, rotate: -1 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="card paper-seyes relative mx-auto max-w-md px-5 pb-5 pl-[58px] pt-6">
+        <motion.div initial={{ opacity: 0, y: 14, rotate: -3 }} animate={{ opacity: 1, y: 0, rotate: -1 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="paper-seyes relative mx-auto max-w-md rounded-[18px] border-[3px] border-ink px-5 pb-5 pl-[58px] pt-6 text-ink shadow-hard-light">
           <motion.span className="absolute -right-3 -top-5 block" animate={{ rotate: [8, -6, 8] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>
             <Emoji id={spectator ? "popcorn" : "hourglass-not-done"} size={58} />
           </motion.span>
@@ -85,14 +85,14 @@ export function WaitingScreen({ view, api }: { view: RoomView; api: GameApi }) {
           <p className="mt-2 text-[1.3rem] leading-[24px] text-ink/85" style={{ fontFamily: "var(--font-hand)", fontWeight: 600 }}>
             {spectator
               ? "Les mèmes sont en préparation. Le vote arrive juste après."
-              : "T'es arrivé pile pendant que les autres créent. Installe-toi : tu votes juste après, et tu crées à la manche suivante."}
+              : "Tu débarques pile pendant que les autres créent. Installe-toi : tu votes juste après, et tu crées à la manche suivante."}
           </p>
         </motion.div>
 
         {theme ? <ThemeBanner theme={theme} style={{ marginTop: 18 }} /> : null}
 
         <div className="mt-5 rounded-[18px] border-2 border-paper/15 bg-ink-2/80 p-4">
-          <OthersProgress view={view} api={api} />
+          <OthersProgress view={view} api={api} excludeId={view.me?.id} />
         </div>
       </div>
     </div>

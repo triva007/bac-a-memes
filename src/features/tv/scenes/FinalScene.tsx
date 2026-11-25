@@ -8,7 +8,7 @@ import { lastPlacePhrase, podiumPhrase, type PodiumRank } from "@/lib/content/ph
 import { sfx } from "@/lib/sfx";
 import { confettiCannons, confettiPop, confettiRain } from "../confetti";
 import { Leaderboard, type BoardRow } from "../Leaderboard";
-import { useCues, useSequence } from "../hooks";
+import { useCues, useDelayed, useSequence } from "../hooks";
 import { PAD, STAGE_W, useStage } from "../stage";
 import { Avatar, Chip, CountUp, DISPLAY, Emo, FLUO, HAND, HandLine, INK, MemeFrame, PAPER, fitSize, hard, plural } from "../ui";
 
@@ -188,7 +188,11 @@ function Podium({ ranked, stage, code }: { ranked: PlayerView[]; stage: (typeof 
                 Le podium du{" "}
                 <span style={{ color: INK, background: FLUO.yellow, padding: "0 0.14em", borderRadius: 16, display: "inline-block", transform: "rotate(-1.5deg)" }}>Bac à Mèmes</span>
               </h1>
-              <HandLine text={PODIUM_LINES[stage]} size={56} style={{ marginTop: 10, textAlign: "center", whiteSpace: "nowrap" }} />
+              {stage === "first" && ranked[0] ? (
+                <WinnerLine name={ranked[0].name} />
+              ) : (
+                <HandLine text={PODIUM_LINES[stage]} size={56} style={{ marginTop: 10, textAlign: "center", whiteSpace: "nowrap" }} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -204,6 +208,18 @@ function Podium({ ranked, stage, code }: { ranked: PlayerView[]; stage: (typeof 
         )}
       </div>
     </div>
+  );
+}
+
+/** Suspense, puis le nom du vainqueur une fois l'avatar tombé sur la plus haute marche. */
+function WinnerLine({ name }: { name: string }) {
+  const revealed = useDelayed(1900);
+  return (
+    <HandLine
+      text={revealed ? `${name} décroche le Bac à Mèmes, mention très drôle !` : PODIUM_LINES.first}
+      size={56}
+      style={{ marginTop: 10, textAlign: "center", whiteSpace: "nowrap" }}
+    />
   );
 }
 
@@ -360,20 +376,22 @@ function Diploma({ award, index, count, view, gallery }: { award: Award; index: 
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
             textAlign: "center",
+            position: "relative",
           }}
         >
-          <div style={{ fontFamily: "var(--font-type)", fontSize: 30, letterSpacing: "0.22em", textTransform: "uppercase", color: "#4a4870", whiteSpace: "nowrap" }}>
+          <div style={{ position: "absolute", left: 0, right: 0, top: 38, fontFamily: "var(--font-type)", fontSize: 30, letterSpacing: "0.22em", textTransform: "uppercase", color: "#4a4870", whiteSpace: "nowrap" }}>
             Académie du Bac à Mèmes · diplôme n° {index + 1}/{count}
           </div>
-          <motion.div initial={{ scale: 0, rotate: -40 }} animate={{ scale: 1, rotate: -6 }} transition={{ type: "spring", stiffness: 280, damping: 11, delay: 0.25 }} style={{ marginTop: 14 }}>
-            <Emo id={award.emoji} size={150} />
+          <motion.div initial={{ scale: 0, rotate: -40 }} animate={{ scale: 1, rotate: -6 }} transition={{ type: "spring", stiffness: 280, damping: 11, delay: 0.25 }} style={{ marginTop: 44 }}>
+            <Emo id={award.emoji} size={entry ? 150 : 176} />
           </motion.div>
           <h1
             style={{
               fontFamily: "var(--font-news)",
               fontWeight: 900,
-              fontSize: fitSize(award.title, [[14, 112], [20, 92], [28, 76], [99, 62]]),
+              fontSize: entry ? fitSize(award.title, [[14, 112], [20, 92], [28, 76], [99, 62]]) : fitSize(award.title, [[14, 132], [20, 110], [28, 88], [99, 70]]),
               lineHeight: 1.02,
               margin: "8px 0 0",
             }}
@@ -396,7 +414,7 @@ function Diploma({ award, index, count, view, gallery }: { award: Award; index: 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.4 }}
-            style={{ ...HAND, fontSize: fitSize(award.description, [[70, 54], [110, 46], [999, 40]]), lineHeight: 1.08, margin: "auto 0 0", maxWidth: 1000, paddingBottom: 6 }}
+            style={{ ...HAND, fontSize: fitSize(award.description, [[70, 58], [110, 50], [999, 42]]), lineHeight: 1.08, margin: "30px 0 0", maxWidth: 1040 }}
           >
             {award.description}
           </motion.p>
@@ -489,20 +507,21 @@ function GallerySlide({ entries, index, view }: { entries: MemeResult[]; index: 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             transition={{ duration: 0.35, delay: 0.25 }}
-            style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}
+            style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}
           >
-            <div style={{ ...DISPLAY, fontSize: 150, lineHeight: 0.9, whiteSpace: "nowrap", alignSelf: "flex-start" }}>
-              <span style={{ fontSize: 70, color: "#9f9dc6" }}>n°</span>
+            <div style={{ ...DISPLAY, fontSize: 112, lineHeight: 0.9, whiteSpace: "nowrap", alignSelf: "flex-start", flex: "none" }}>
+              <span style={{ fontSize: 60, color: "#9f9dc6" }}>n°</span>
               {index + 1}
-              <span style={{ fontSize: 60, color: "#9f9dc6" }}> /{entries.length}</span>
+              <span style={{ fontSize: 52, color: "#9f9dc6" }}> /{entries.length}</span>
             </div>
-            <Avatar avatar={entry.authorAvatar} color={author?.color ?? FLUO.blue} size={200} />
+            <Avatar avatar={entry.authorAvatar} color={author?.color ?? FLUO.blue} size={164} />
             <div
               style={{
                 ...DISPLAY,
                 maxWidth: "100%",
+                flex: "none",
                 padding: "6px 26px 10px",
-                fontSize: fitSize(entry.authorName, [[7, 84], [10, 68], [13, 56], [99, 46]]),
+                fontSize: fitSize(entry.authorName, [[7, 76], [10, 64], [13, 54], [99, 44]]),
                 lineHeight: 1.1,
                 color: INK,
                 background: PAPER,
@@ -517,11 +536,11 @@ function GallerySlide({ entries, index, view }: { entries: MemeResult[]; index: 
             >
               {entry.authorName}
             </div>
-            <div style={{ ...DISPLAY, display: "flex", alignItems: "baseline", gap: 12, padding: "6px 28px 12px", color: INK, background: FLUO.yellow, border: `6px solid ${INK}`, borderRadius: 28, boxShadow: hard(8), transform: "rotate(2deg)", whiteSpace: "nowrap" }}>
-              <span style={{ fontSize: 104, lineHeight: 1 }}>{entry.points}</span>
+            <div style={{ ...DISPLAY, flex: "none", display: "flex", alignItems: "baseline", gap: 12, padding: "2px 28px 8px", color: INK, background: FLUO.yellow, border: `6px solid ${INK}`, borderRadius: 28, boxShadow: hard(8), transform: "rotate(2deg)", whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: 96, lineHeight: 1 }}>{entry.points}</span>
               <span style={{ fontSize: 44 }}>{entry.points > 1 ? "points" : "point"}</span>
             </div>
-            <div style={{ display: "flex", gap: 12, width: "100%" }}>
+            <div style={{ display: "flex", gap: 12, width: "100%", flex: "none" }}>
               {VOTE_OPTIONS.map((o) => (
                 <div key={o.score} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "8px 0 6px", color: INK, background: PAPER, border: `4px solid ${INK}`, borderRadius: 18, opacity: entry.breakdown[o.score] ? 1 : 0.5 }}>
                   <Emo id={o.emoji} size={54} />
@@ -529,7 +548,7 @@ function GallerySlide({ entries, index, view }: { entries: MemeResult[]; index: 
                 </div>
               ))}
             </div>
-            <div style={{ ...HAND, fontSize: 42, lineHeight: 1, color: "#c9c6e6" }}>
+            <div style={{ ...HAND, fontSize: 42, lineHeight: 1, color: "#c9c6e6", flex: "none" }}>
               manche {entry.round} · {plural(votes, "vote", "votes")}
             </div>
           </motion.div>

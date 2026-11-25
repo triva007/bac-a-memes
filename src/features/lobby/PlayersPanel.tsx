@@ -13,7 +13,7 @@ function PlayerTile({ player, isMe, onKick }: { player: PlayerView; isMe: boolea
   const body = (
     <>
       <span className="relative">
-        <Avatar avatar={player.avatar} color={player.color} size={56} dimmed={!player.connected} className="shadow-[3px_3px_0_0_rgba(0,0,0,0.5)]" />
+        <Avatar avatar={player.avatar} color={player.color} size={52} dimmed={!player.connected} className="shadow-[3px_3px_0_0_rgba(0,0,0,0.5)]" />
         {player.isHost ? (
           <span className="absolute -left-2.5 -top-3.5 -rotate-[24deg] drop-shadow-[1px_2px_0_rgba(0,0,0,0.5)]">
             <Emoji id="crown" size={26} alt="Hôte" />
@@ -25,7 +25,7 @@ function PlayerTile({ player, isMe, onKick }: { player: PlayerView; isMe: boolea
           </span>
         ) : null}
       </span>
-      <span className={`mt-1.5 block w-full truncate text-center text-[0.84rem] font-bold leading-tight ${player.connected ? "text-paper" : "text-paper/45"}`}>
+      <span className={`mt-1.5 line-clamp-2 w-full text-center text-[0.8rem] font-bold leading-[1.15] [overflow-wrap:anywhere] ${player.connected ? "text-paper" : "text-paper/45"}`}>
         {player.name}
       </span>
       <span className="mt-0.5 flex h-[16px] items-center justify-center">
@@ -39,7 +39,7 @@ function PlayerTile({ player, isMe, onKick }: { player: PlayerView; isMe: boolea
       </span>
     </>
   );
-  const cls = "flex w-full min-w-0 flex-col items-center rounded-2xl px-1 pb-1 pt-2.5";
+  const cls = "flex w-full min-w-0 flex-col items-center rounded-2xl px-1 pb-0.5 pt-2.5";
   if (onKick) {
     return (
       <button
@@ -106,7 +106,7 @@ export function PlayersPanel({ view, api }: PhaseProps) {
         {offline > 0 ? <p className="text-[0.8rem] font-semibold text-muted">{offline} hors ligne</p> : null}
       </div>
 
-      <ul className="grid grid-cols-4 gap-x-1 gap-y-1.5 sm:grid-cols-5">
+      <ul className="grid grid-cols-4 items-start gap-x-1 gap-y-1.5 sm:grid-cols-5">
         <AnimatePresence initial={false} mode="popLayout">
           {view.players.map((p) => (
             <motion.li
@@ -135,7 +135,7 @@ export function PlayersPanel({ view, api }: PhaseProps) {
         </AnimatePresence>
         {Array.from({ length: placeholders }, (_, i) => (
           <li key={`vide-${i}`} aria-hidden className="flex flex-col items-center px-1 pb-1 pt-2.5">
-            <span className="grid h-[56px] w-[56px] place-items-center rounded-full border-[3px] border-dashed border-paper/25 font-display text-[1.4rem] font-extrabold text-paper/25">?</span>
+            <span className="grid h-[52px] w-[52px] place-items-center rounded-full border-[3px] border-dashed border-paper/25 font-display text-[1.4rem] font-extrabold text-paper/25">?</span>
           </li>
         ))}
       </ul>

@@ -429,7 +429,7 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
               onStickersChange={onStickers}
             />
           </div>
-          {usedJoker ? (
+          {usedJoker && templateOk ? (
             <span className="pointer-events-none absolute left-2 top-1.5 flex -rotate-3 items-center gap-1 rounded-lg border-2 border-ink bg-fluo-pink px-1.5 py-0.5 font-display text-[0.7rem] font-extrabold uppercase tracking-wide text-ink shadow-hard-light">
               <Emoji id="joker" size={16} />
               Joker
@@ -587,7 +587,6 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
                 type="button"
                 onClick={trySubmit}
                 disabled={busy || locked}
-                aria-disabled={!ready}
                 className={`btn min-w-0 flex-1 whitespace-nowrap !px-2 ${ready ? "btn-green" : "!bg-paper-2 !text-ink/55"}`}
                 data-testid="submit"
                 data-ready={ready ? "1" : "0"}

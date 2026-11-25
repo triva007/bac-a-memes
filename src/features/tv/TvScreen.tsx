@@ -132,14 +132,14 @@ export function TvScreen({ code: rawCode }: { code: string }) {
             <motion.div
               key="offline"
               role="status"
-              initial={{ y: -90, opacity: 0 }}
+              initial={{ y: 90, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -90, opacity: 0 }}
+              exit={{ y: 90, opacity: 0 }}
               style={{
                 ...DISPLAY,
                 position: "absolute",
                 left: "50%",
-                top: 18,
+                bottom: 22,
                 x: "-50%",
                 zIndex: 30,
                 display: "flex",
@@ -155,7 +155,13 @@ export function TvScreen({ code: rawCode }: { code: string }) {
                 whiteSpace: "nowrap",
               }}
             >
-              <Emo id="satellite-antenna" size={44} />
+              {/* pas d'image ici : hors ligne, elle ne se chargerait pas */}
+              <motion.span
+                aria-hidden
+                animate={{ opacity: [1, 0.25, 1] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+                style={{ width: 26, height: 26, borderRadius: "50%", background: "#e5383b", border: `4px solid ${INK}`, flex: "none" }}
+              />
               Connexion perdue… on réessaie tout seul
             </motion.div>
           ) : null}

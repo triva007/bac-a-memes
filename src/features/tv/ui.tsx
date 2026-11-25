@@ -157,7 +157,9 @@ export function PlayerTile({
   badge?: ReactNode;
 }) {
   const disc = Math.round(w * 0.7);
-  const label = Math.max(15, Math.round(w * 0.155));
+  // les longs pseudos rétrécissent un peu plutôt que d'être coupés
+  const len = [...player.name].length;
+  const label = Math.max(14, Math.round(w * (w < 150 ? 0.172 : 0.155) * (len > 9 ? Math.max(0.62, 9 / len) : 1)));
   const tilt = tiltOf(player.id, 4);
   return (
     <div

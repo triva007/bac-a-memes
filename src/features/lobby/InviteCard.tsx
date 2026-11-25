@@ -114,7 +114,7 @@ export function InviteCard({ code }: { code: string }) {
       try {
         await navigator.share({
           title: "Bac à Mèmes",
-          text: `Rejoins ma partie de Bac à Mèmes ! Code : ${code}`,
+          text: `Rejoins ma partie de Bac à Mèmes\u00a0! Code\u00a0: ${code}`,
           url: joinUrl,
         });
         return;
@@ -141,7 +141,7 @@ export function InviteCard({ code }: { code: string }) {
               <span className="hl [--hl:var(--color-fluo-yellow)]">{code}</span>
             </div>
           </div>
-          <button type="button" className="btn btn-sm btn-green mt-2 w-fit lg:mt-4 lg:min-h-[48px] lg:px-5 lg:text-[1rem]" onClick={share}>
+          <button type="button" className="btn btn-sm btn-green mt-2 w-fit lg:mt-4 lg:!min-h-[48px] lg:!px-5 lg:!text-[1rem]" onClick={share}>
             <Icon name={copied ? "check" : canShare ? "share" : "copy"} size={18} />
             <span aria-live="polite">{copied ? "Lien copié !" : canShare ? "Partager le lien" : "Copier le lien"}</span>
           </button>
@@ -163,14 +163,12 @@ export function InviteCard({ code }: { code: string }) {
         <Emoji id="television" size={28} />
         <p className="min-w-0 flex-1 text-[0.82rem] font-medium leading-snug text-paper/85">
           <strong className="font-bold text-paper">Écran de classe&nbsp;:</strong> ouvre{" "}
-          <span className="break-all font-bold text-fluo-yellow">
-            {host}/tv/{code}
-          </span>{" "}
-          sur l&apos;ordi du vidéoprojecteur.
+          <span className="whitespace-nowrap font-bold text-fluo-yellow">/tv/{code}</span> sur l&apos;ordi du vidéoprojecteur.
         </p>
         <CopyButton
           text={tvUrl}
           label="Copier"
+          doneLabel="Copié"
           className="flex min-h-[44px] flex-none items-center gap-1.5 rounded-xl border-2 border-paper/35 px-2.5 text-[0.82rem] font-bold text-paper outline-none hover:bg-paper/10 focus-visible:ring-4 focus-visible:ring-fluo-blue"
           iconSize={16}
         />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import type { CustomImage, Meme, Sticker } from "@/lib/game/types";
 import { TEMPLATES, getMemeFields } from "@/lib/templates";
 import { CATEGORIES, type MemeTemplate, type TemplateField } from "@/lib/templates/types";
@@ -189,7 +189,12 @@ function StickerLab() {
   );
 }
 
+const noopSubscribe = () => () => {};
+
 function PersoLab({ fill }: { fill: Fill }) {
+  // les images factices sont dessinées dans un <canvas> : côté navigateur uniquement
+  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  if (!mounted) return null;
   return (
     <section data-section="perso" className="rounded-2xl border-2 border-[#2c2a5a] bg-[#1e1d40] p-4">
       <h3 className="mb-3 font-display text-xl font-extrabold text-[#fbf7ec]">Pack perso (images factices)</h3>

@@ -173,6 +173,8 @@ export interface Autosave {
 
 const DEBOUNCE_MS = 1500;
 const HURRY_MS = 300;
+/** quelqu'un qui tape sans s'arrêter est quand même sauvegardé au moins toutes les ~6 s */
+const MAX_WAIT_MS = 6000;
 
 /**
  * Envoie l'action `draft` avec un délai anti-rafale : ~1,5 s après la dernière
@@ -185,6 +187,8 @@ export function useAutosave(api: GameApi, payload: DraftPayload | null, enabled:
   const inFlight = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const delay = useRef(DEBOUNCE_MS);
+  /** début de la série de modifications pas encore envoyées */
+  const pendingSince = useRef<number | null>(null);
   const stopped = useRef(false);
   const enabledRef = useRef(enabled);
   const onErrorRef = useRef(onError);
@@ -206,6 +210,7 @@ export function useAutosave(api: GameApi, payload: DraftPayload | null, enabled:
     if (inFlight.current) return; // relancé à la fin de la requête en cours
     if (cur.json === sentJson.current) return;
     inFlight.current = true;
+    pendingSince.current = null;
     const sending = cur.json;
     sentJson.current = sending;
     api
@@ -249,7 +254,10 @@ export function useAutosave(api: GameApi, payload: DraftPayload | null, enabled:
     }
     if (json === sentJson.current) return;
     clear();
-    timer.current = setTimeout(() => flushRef.current(), delay.current);
+    const now = Date.now();
+    pendingSince.current ??= now;
+    const wait = Math.max(HURRY_MS, Math.min(delay.current, MAX_WAIT_MS - (now - pendingSince.current)));
+    timer.current = setTimeout(() => flushRef.current(), wait);
     // `payload` suit `json` : la version sérialisée suffit comme dépendance
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [json, enabled]);

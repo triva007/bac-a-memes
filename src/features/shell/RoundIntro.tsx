@@ -53,10 +53,10 @@ export function RoundIntro({ view, api }: { view: RoomView; api: GameApi }) {
             initial={{ scale: 0.4, rotate: -14, opacity: 0 }}
             animate={{ scale: 1, rotate: -3, opacity: 1 }}
             transition={{ type: "spring", stiffness: 380, damping: 17, delay: 0.05 }}
-            className="block rounded-[20px] border-[4px] border-ink bg-fluo-yellow px-5 pb-1 pt-2 font-display text-[clamp(3rem,15vw,5.5rem)] font-extrabold uppercase leading-none tracking-tight text-ink shadow-[7px_7px_0_0_var(--color-fluo-pink)]"
+            className="block whitespace-nowrap rounded-[20px] border-[4px] border-ink bg-fluo-yellow px-5 pb-1 pt-2 font-display text-[clamp(2.5rem,12.5vw,5.5rem)] font-extrabold uppercase leading-none tracking-tight text-ink shadow-[7px_7px_0_0_var(--color-fluo-pink)]"
           >
             Manche {frozen.round}
-            <span className="ml-1 align-top text-[0.4em] tracking-normal text-ink/60">/{frozen.total}</span>
+            <span className="ml-1 text-[0.45em] tracking-normal text-ink/55">/{frozen.total}</span>
           </motion.span>
           <motion.span
             initial={{ y: 24, opacity: 0 }}

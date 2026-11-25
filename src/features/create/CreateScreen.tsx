@@ -45,8 +45,8 @@ function CreateFlow({ view, api }: PhaseProps) {
   const [draft, setDraft] = useState<DraftState>(() => initDraft(view, storageKey));
   const [library, setLibrary] = useState(false);
   const [busy, setBusy] = useState<"submit" | "unsubmit" | null>(null);
-  /** vrai quand on arrive dans l'éditeur par un tap sur un gabarit : le premier champ prend le focus */
-  const [arrivedByTap, setArrivedByTap] = useState(false);
+  /** vrai quand on arrive dans l'éditeur par un tap sur un gabarit (ou d'office en mode « même image ») : le premier champ prend le focus */
+  const [arrivedByTap, setArrivedByTap] = useState(() => forced !== null && !submitted && !create?.myMeme);
   const [notice, notify] = useNotice();
 
   const templateId = forced ?? draft.templateId;

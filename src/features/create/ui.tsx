@@ -175,11 +175,11 @@ function useServerClock(api: Pick<GameApi, "serverNow">, everyMs: number): numbe
  * Compteur « X / Y ont rendu leur copie », avatars cochés et phrase d'ambiance
  * qui tourne. Utilisé après validation et sur les écrans d'attente.
  */
-export function OthersProgress({ view, api, dense = false }: { view: RoomView; api: Pick<GameApi, "serverNow">; dense?: boolean }): ReactNode {
+export function OthersProgress({ view, api, dense = false, excludeId }: { view: RoomView; api: Pick<GameApi, "serverNow">; dense?: boolean; /** joueur à ne pas montrer (arrivé en cours de manche : il ne crée pas) */ excludeId?: string }): ReactNode {
   const now = useServerClock(api, 2000);
   const create = view.create;
   if (!create) return null;
-  const shown = view.players.filter((p) => p.connected || p.done);
+  const shown = view.players.filter((p) => (p.connected || p.done) && p.id !== excludeId);
   const waiting = shown.filter((p) => !p.done && p.connected).map((p) => p.name);
   const total = Math.max(create.totalPlayers, 1);
   const ratio = Math.min(1, create.submittedCount / total);

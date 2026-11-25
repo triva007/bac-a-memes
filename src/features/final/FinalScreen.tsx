@@ -146,7 +146,7 @@ function FinalRanking({ ranked, me, seed }: { ranked: Ranked[]; me: Ranked | nul
   return (
     <div className="mx-auto w-full max-w-xl px-3 pb-6 pt-3">
       <h2 className="font-display text-[26px] font-extrabold leading-tight text-paper">
-        Classement <span className="hl text-ink">final</span>
+        Classement <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">final</span>
       </h2>
 
       {me ? (

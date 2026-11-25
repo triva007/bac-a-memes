@@ -392,20 +392,27 @@ export function Ribbon({ x = 0, y = 0, w, h, color = C.pink, rotate, children }:
   );
 }
 
+/** Suite pseudo-aléatoire déterministe (pure) : n valeurs dans [0, 1[. */
+function pseudoRandom(seed: number, n: number): number[] {
+  const out: number[] = [];
+  let s = (Math.abs(Math.round(seed)) * 9301 + 49297) % 233280;
+  for (let i = 0; i < n; i++) {
+    s = (s * 9301 + 49297) % 233280;
+    out.push(s / 233280);
+  }
+  return out;
+}
+
 /** Confettis fixes (répartition déterministe selon `seed`). */
 export function Confetti({ x = 0, y = 0, w, h, n = 36, seed = 1, colors = [C.yellow, C.pink, C.green, C.blue, C.orange, C.violet] }: Pos & { n?: number; seed?: number; colors?: string[] }) {
+  const rnd = pseudoRandom(seed, n * 5);
   const items = [];
-  let s = seed * 9301 + 49297;
-  const rnd = () => {
-    s = (s * 9301 + 49297) % 233280;
-    return s / 233280;
-  };
   for (let i = 0; i < n; i++) {
-    const px = Math.round(rnd() * w);
-    const py = Math.round(rnd() * h);
-    const sz = 10 + Math.round(rnd() * 16);
-    const rot = Math.round(rnd() * 180);
-    const round = rnd() > 0.7;
+    const px = Math.round(rnd[i * 5] * w);
+    const py = Math.round(rnd[i * 5 + 1] * h);
+    const sz = 10 + Math.round(rnd[i * 5 + 2] * 16);
+    const rot = Math.round(rnd[i * 5 + 3] * 180);
+    const round = rnd[i * 5 + 4] > 0.7;
     items.push(
       <div
         key={i}

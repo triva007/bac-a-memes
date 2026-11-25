@@ -242,7 +242,7 @@ export function SettingsEditor({ view, draft }: { view: RoomView; draft: Setting
         <div className="divide-y-2 divide-ink/10">
           <Switch label="Stickers" hint="coller des emojis sur son mème" checked={s.stickers} onChange={(stickers) => draft.set({ stickers })} />
           <Segmented
-            label="Qui peut ajouter des images ?"
+            label={"Qui peut ajouter des images\u00a0?"}
             hint="pour le pack perso de la salle"
             value={s.uploads}
             options={UPLOAD_OPTIONS}

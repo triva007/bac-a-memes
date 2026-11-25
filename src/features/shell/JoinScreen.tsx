@@ -151,7 +151,7 @@ export function JoinScreen({ view, join }: { view: RoomView; join: (name: string
         />
       </motion.section>
 
-      <div className="min-h-4 flex-1" />
+      <div className="min-h-4 flex-1 sm:flex-none" />
 
       <div
         className="sticky bottom-0 -mx-4 bg-gradient-to-t from-ink from-70% to-transparent px-4 pt-5"

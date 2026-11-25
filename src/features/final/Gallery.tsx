@@ -38,7 +38,7 @@ export function Gallery({
       <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
         <div className="min-w-0">
           <h2 className="font-display text-[26px] font-extrabold leading-tight text-paper">
-            La <span className="hl text-ink">galerie</span>
+            La <span className="inline-block -rotate-1 rounded-md bg-fluo-yellow px-2 text-ink">galerie</span>
           </h2>
           <p className="mt-0.5 text-[13px] font-medium text-paper/60">Touche un mème pour le voir en grand, le télécharger ou le partager.</p>
         </div>

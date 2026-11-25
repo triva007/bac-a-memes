@@ -53,12 +53,11 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
     <div className="mx-auto flex h-full w-full max-w-[720px] flex-col" data-testid="picker">
       <header className="flex flex-none items-center gap-2 px-4 pb-2 pt-3">
         {onBack ? (
-          <button type="button" onClick={onBack} className="btn btn-sm btn-paper flex-none !min-h-[44px] !px-3" aria-label="Revenir à mon mème sans changer de gabarit">
-            <Icon name="left" size={18} />
-            Mon mème
+          <button type="button" onClick={onBack} className="btn btn-sm btn-paper !h-11 !min-h-11 !w-11 flex-none !p-0" aria-label="Revenir à mon mème sans changer de gabarit" data-testid="picker-back">
+            <Icon name="left" size={20} stroke={3} />
           </button>
         ) : null}
-        <h2 className="min-w-0 flex-1 font-display text-[1.45rem] font-extrabold leading-none text-paper">
+        <h2 className={`min-w-0 flex-1 whitespace-nowrap font-display font-extrabold leading-none text-paper ${onBack ? "text-[1.3rem]" : "text-[1.45rem]"}`}>
           {onBack ? "Change de " : "Choisis ton "}
           <Marker>gabarit</Marker>
         </h2>
@@ -90,6 +89,7 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
                 eager
                 deal
                 selected={id === selectedId}
+                badge={id === selectedId ? "Ton choix" : undefined}
                 disabled={locked}
                 onPick={onPick}
               />
