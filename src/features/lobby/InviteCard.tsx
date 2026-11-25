@@ -135,7 +135,7 @@ export function InviteCard({ code }: { code: string }) {
           <div>
             <div className="text-[0.74rem] font-bold uppercase tracking-wide text-ink/60">Code de la salle</div>
             <div
-              className="mt-0.5 w-fit -rotate-1 font-display text-[clamp(3rem,15.5vw,3.9rem)] font-extrabold leading-[0.95] tracking-[0.04em] lg:text-[5.4rem]"
+              className="mt-0.5 w-fit -rotate-1 font-display max-w-full text-[clamp(2.4rem,12vw,3.4rem)] font-extrabold leading-[0.95] tracking-[0.04em] lg:text-[5.4rem]"
               aria-label={code.split("").join(" ")}
             >
               <span className="hl [--hl:var(--color-fluo-yellow)]">{code}</span>
