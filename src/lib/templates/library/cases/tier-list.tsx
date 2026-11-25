@@ -45,7 +45,7 @@ const template: MemeTemplate = {
     { id: "titre", label: "Tier list des…", placeholder: "Excuses pour un retard", maxLength: 34 },
     { id: "s", label: "Tier S (le sommet)", placeholder: "« Mon réveil a rendu l'âme »", maxLength: 46 },
     { id: "a", label: "Tier A", placeholder: "« Y avait pas de bus »", maxLength: 46, optional: true },
-    { id: "c", label: "Tier C", placeholder: "« J'étais à l'infirmerie »", maxLength: 46, optional: true },
+    { id: "c", label: "Tier C", placeholder: "« J'étais à l'infirmerie »", maxLength: 46, optional: true },
     { id: "d", label: "Tier D (flop total)", placeholder: "« J'étais là, vous m'avez pas vu »", maxLength: 46 },
   ],
   Render,

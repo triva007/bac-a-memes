@@ -52,13 +52,11 @@ function Render() {
         <Txt x={136} y={16} size={27} weight={800} color={MUTED} ls={0.08}>
           CANDIDAT(E)
         </Txt>
-        <T id="nom" x={136} y={48} w={490} h={70} font="display" max={58} min={30} align="left" color={INK} nowrap />
-        <Txt x={0} y={30} w={910} align="right" size={28} weight={500} color={MUTED}>
-          Dossier n° 847 211
+        {/* infos du dossier sur la ligne du libellé : le nom garde toute la largeur en dessous */}
+        <Txt x={0} y={16} w={910} align="right" size={28} weight={600} color={NAVY}>
+          N° 847 211 · vu 47 fois ce matin
         </Txt>
-        <Txt x={0} y={72} w={910} align="right" size={28} weight={700} color={NAVY}>
-          Vu 47 fois ce matin
-        </Txt>
+        <T id="nom" x={136} y={48} w={774} h={70} font="display" max={58} min={30} align="left" color={INK} nowrap />
       </Box>
 
       <Voeu y={298} n={1} id="voeu1" sub="12 places · 9 847 candidats" color={ORANGE}>

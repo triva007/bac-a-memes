@@ -13,7 +13,7 @@ function Render() {
         </Txt>
         <T id="nom" x={300} y={22} w={312} h={70} font="hand" color={C.bluePen} max={60} min={30} align="left" nowrap />
         <Txt x={196} y={96} size={42} font="hand" color={C.bluePen}>
-          Classe : Tle B · Lundi 12 janvier
+          Classe : Tle B · 12 janvier
         </Txt>
         <Txt x={196} y={186} w={690} align="center" size={56} font="hand" color={C.bluePen}>
           Devoir surveillé n° 4

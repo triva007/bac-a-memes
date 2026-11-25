@@ -20,9 +20,9 @@ function Render() {
       <Txt x={50} y={98} size={46} font="display" color="rgba(255,255,255,0.85)" ls={0.06}>
         CHARGEMENT DE…
       </Txt>
-      <T id="quoi" x={50} y={150} w={900} h={150} font="meme" upper max={132} min={50} align="left" color="#ffe94a" shadow="0 6px 0 rgba(0,0,0,0.35)" />
+      <T id="quoi" x={50} y={146} w={900} h={128} font="meme" upper max={116} min={50} align="left" color="#ffe94a" shadow="0 6px 0 rgba(0,0,0,0.35)" />
 
-      <Emo id="snail" x={44} y={270} size={86} />
+      <Emo id="snail" x={46} y={278} size={78} />
       <Gauge x={50} y={350} w={724} h={60} value={0.04} color="#ff5fa2" stripes track="rgba(255,255,255,0.14)" border="4px solid rgba(255,255,255,0.85)" />
       <Txt x={780} y={322} w={176} align="right" size={100} font="meme" color="#fff" lh={1} style={{ whiteSpace: "nowrap" }}>
         3 %
