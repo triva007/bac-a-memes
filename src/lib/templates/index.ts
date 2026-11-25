@@ -30,8 +30,8 @@ import fichePnj from "./library/affiches/fiche-pnj";
 /** Champs des gabarits « image à légender » (pack perso et pack intégré) : haut / bas, optionnels. */
 export const PERSO_TEMPLATE_FIELDS: TemplateField[] = PERSO_FIELDS.map((f) => ({
   id: f.id,
-  label: f.id === "haut" ? "Texte du haut" : "Texte du bas",
-  placeholder: f.id === "haut" ? "TEXTE DU HAUT" : "TEXTE DU BAS",
+  label: f.id === "haut" ? "Légende du haut" : "Légende du bas",
+  placeholder: f.id === "haut" ? "Écris ta légende…" : "La chute (facultatif)",
   maxLength: f.maxLength,
   optional: true,
 }));

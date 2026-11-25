@@ -15,7 +15,7 @@
  */
 import { computeAwards, memePoints } from "./awards";
 import { BOT_AVATARS, BOT_NAMES, botCreateDelay, botScore, botVoteDelay, buildBotMeme } from "./bots";
-import { buildPool, dealHands, dealSituations, persoTemplateId, pickForcedTemplate, pickTheme } from "./deal";
+import { PACK_CATEGORY, buildPool, dealHands, dealSituations, persoTemplateId, pickForcedTemplate, pickTheme } from "./deal";
 import { deterministicHex, makeRng, shuffle } from "./rng";
 import {
   applySettingsPatch,
@@ -172,6 +172,16 @@ export interface CreateRoomParams {
   seed: string;
   now: number;
   host: { id: string; token: string; name: string; avatar: string };
+  /** catalogue de gabarits : s'il contient le pack intégré, la salle démarre sur lui seul */
+  catalog?: TemplateMeta[];
+}
+
+/**
+ * Catégories par défaut d'une nouvelle salle : le pack intégré seul (+ le pack
+ * perso de la salle) quand il existe, sinon tout (`[]`).
+ */
+export function defaultCategories(catalog: readonly TemplateMeta[] | undefined): string[] {
+  return catalog?.some((t) => t.category === PACK_CATEGORY) ? [PACK_CATEGORY, PERSO_CATEGORY] : [];
 }
 
 export function createRoom(params: CreateRoomParams): ActionOutcome {
@@ -202,7 +212,7 @@ export function createRoom(params: CreateRoomParams): ActionOutcome {
     phaseStartedAt: params.now,
     phaseEndsAt: null,
     round: 0,
-    settings: { ...DEFAULT_SETTINGS, categories: [], profs: [], extraNames: [] },
+    settings: { ...DEFAULT_SETTINGS, categories: defaultCategories(params.catalog), profs: [], extraNames: [] },
     hostId: host.id,
     ownerId: host.id,
     players: [host],
@@ -790,6 +800,11 @@ function doMeme(d: RoomState, ctx: Ctx, player: PlayerState, action: Extract<Act
     if (forced) return fail("invalid", "Dans ce mode, tout le monde légende le même gabarit.");
     if (action.usedJoker !== true) return fail("invalid", "Ce gabarit n'est pas dans ta main.");
     if (!rp.usedJoker && player.jokersLeft <= 0) return fail("invalid", "Tu n'as plus de joker.");
+    if (!templateId.startsWith(PERSO_PREFIX)) {
+      // le joker ne sort pas des catégories activées par l'hôte
+      const pool = buildPool(ctx.catalog, d.images.map((i) => persoTemplateId(i.id)), d.settings.categories, d.settings.handSize);
+      if (!pool.base.some((t) => t.id === templateId)) return fail("invalid", "Cette catégorie est désactivée pour cette partie.");
+    }
     joker = true;
   }
   const meme = sanitizeMeme(raw, template, d.settings.stickers);

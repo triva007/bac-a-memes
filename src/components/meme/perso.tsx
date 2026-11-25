@@ -8,7 +8,7 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { PERSO_PREFIX, type CustomImage } from "@/lib/game/types";
-import { persoCanvasHeight } from "@/lib/templates/caption";
+import { CAPTION_FRAME, captionImageBox, persoCanvasHeight } from "@/lib/templates/caption";
 import { T, useMeme } from "./kit-core";
 
 interface PersoImagesValue {
@@ -59,16 +59,21 @@ export function usePersoImage(templateId: string): PersoImageInfo | null {
 }
 
 /**
- * Rendu « image à légender » : image entière (contain) sur elle-même floutée,
- * légendes haut / bas. Sert au pack perso ET au pack intégré (public/pack).
+ * Rendu « image à légender » façon mème classique : cadre blanc, légende `haut`
+ * dans le bandeau du haut, image ENTIÈRE et intacte au milieu (rien n'est écrit
+ * dessus), légende `bas` dans le bandeau du bas. Sert au pack perso ET au pack
+ * intégré (public/pack). Si l'image ne remplit pas sa zone (très étroite ou très
+ * plate), les bords sont comblés par elle-même floutée.
  */
 export function CaptionRender({ url, height }: { url: string; height: number }) {
   const { mode } = useMeme();
   const loading = mode === "edit" ? "eager" : "lazy";
-  const capH = Math.round(Math.min(300, height * 0.3));
+  const box = captionImageBox(height);
+  const { top, bottom } = CAPTION_FRAME;
   return (
     <>
-      <div style={{ position: "absolute", inset: 0, background: "#0d0c1f", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, background: "#ffffff" }} />
+      <div style={{ position: "absolute", left: box.x, top: box.y, width: box.w, height: box.h, background: "#0d0c1f", overflow: "hidden", borderRadius: 6 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={url}
@@ -77,7 +82,7 @@ export function CaptionRender({ url, height }: { url: string; height: number }) 
           draggable={false}
           decoding="async"
           loading={loading}
-          style={{ position: "absolute", left: -80, top: -80, width: 1160, maxWidth: "none", height: height + 160, objectFit: "cover", filter: "blur(38px) brightness(0.5) saturate(1.25)", pointerEvents: "none" }}
+          style={{ position: "absolute", left: -80, top: -80, width: box.w + 160, maxWidth: "none", height: box.h + 160, objectFit: "cover", filter: "blur(38px) brightness(0.55) saturate(1.2)", pointerEvents: "none" }}
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -86,11 +91,11 @@ export function CaptionRender({ url, height }: { url: string; height: number }) 
           draggable={false}
           decoding="async"
           loading={loading}
-          style={{ position: "absolute", left: 0, top: 0, width: 1000, maxWidth: "none", height, objectFit: "contain", pointerEvents: "none", userSelect: "none" }}
+          style={{ position: "absolute", left: 0, top: 0, width: box.w, maxWidth: "none", height: box.h, objectFit: "contain", pointerEvents: "none", userSelect: "none" }}
         />
       </div>
-      <T id="haut" x={36} y={22} w={928} h={capH} font="meme" max={104} min={44} upper outline valign="top" />
-      <T id="bas" x={36} y={height - capH - 26} w={928} h={capH} font="meme" max={104} min={44} upper outline valign="bottom" />
+      <T id="haut" x={40} y={14} w={920} h={top - 28} font="display" color="#111118" max={88} min={36} lh={1.06} />
+      <T id="bas" x={40} y={height - bottom + 10} w={920} h={bottom - 22} font="display" color="#111118" max={74} min={34} lh={1.06} />
     </>
   );
 }

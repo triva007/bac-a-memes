@@ -168,6 +168,7 @@ export async function createRoomRequest(deps: ServiceDeps, body: unknown, nextCo
         seed: randomBytes(16).toString("hex"),
         now,
         host: { id: newPlayerId(), token: newToken(), name, avatar },
+        catalog: deps.catalog,
       });
       if (!out.ok) return fromEngine(out);
       await deps.store.save(code, out.room, null);

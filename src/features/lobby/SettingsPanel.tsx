@@ -58,6 +58,8 @@ function estimateMinutes(s: Settings, players: number): number {
   return Math.max(1, Math.round((s.rounds * perRound) / 60));
 }
 
+const PACK_CATEGORY_ID = "memes";
+
 interface CategoryOption {
   id: string;
   label: string;
@@ -130,8 +132,40 @@ function CategoryPicker({ selected, options, onChange }: { selected: string[]; o
     }
     sfx.play("tap");
     // tout coché = « toutes » (les futures catégories seront incluses)
-    onChange(next.length === all.length ? [] : all.filter((c) => next.includes(c)));
+    // (le pack perso reste activé d'avance tant que la salle n'a pas encore d'images)
+    const keepPerso = !all.includes(PERSO_CATEGORY) && selected.includes(PERSO_CATEGORY);
+    onChange(next.length === all.length ? [] : [...all.filter((c) => next.includes(c)), ...(keepPerso ? [PERSO_CATEGORY] : [])]);
   };
+  const chip = (o: CategoryOption) => {
+    const on = isCategoryOn(selected, o.id);
+    const last = on && onCount === 1;
+    return (
+      <button
+        key={o.id}
+        type="button"
+        role="checkbox"
+        aria-checked={on}
+        aria-disabled={last || undefined}
+        title={last ? "Il faut garder au moins une catégorie" : undefined}
+        onClick={() => toggle(o.id)}
+        className={[
+          "flex min-h-[44px] items-center gap-1.5 rounded-full border-[2.5px] border-ink py-1 pl-2 pr-3 text-[0.9rem] font-bold outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue",
+          on ? "bg-fluo-green shadow-[2px_2px_0_0_var(--color-ink)]" : "bg-white text-ink/55",
+        ].join(" ")}
+      >
+        <span className={`grid h-[22px] w-[22px] flex-none place-items-center rounded-md border-2 border-ink ${on ? "bg-ink text-paper" : "bg-white"}`} aria-hidden>
+          {on ? <Icon name="check" size={14} strokeWidth={3.5} /> : null}
+        </span>
+        <Emoji id={o.emoji} size={20} />
+        {o.label}
+      </button>
+    );
+  };
+  // avec un pack intégré : lui (et le pack perso) d'abord, les formats originaux à part
+  const hasPack = options.some((o) => o.id === PACK_CATEGORY_ID);
+  const main = hasPack ? options.filter((o) => o.id === PACK_CATEGORY_ID || o.id === PERSO_CATEGORY) : options;
+  const extra = hasPack ? options.filter((o) => !main.includes(o)) : [];
+  const extraOn = extra.filter((o) => isCategoryOn(selected, o.id)).length;
   return (
     <div className="py-1">
       <div className="flex items-baseline justify-between gap-2">
@@ -139,32 +173,18 @@ function CategoryPicker({ selected, options, onChange }: { selected: string[]; o
         <span className="text-[0.8rem] font-semibold text-ink/60">{onCount === all.length ? "toutes" : `${onCount} sur ${all.length}`}</span>
       </div>
       <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Catégories de gabarits">
-        {options.map((o) => {
-          const on = isCategoryOn(selected, o.id);
-          const last = on && onCount === 1;
-          return (
-            <button
-              key={o.id}
-              type="button"
-              role="checkbox"
-              aria-checked={on}
-              aria-disabled={last || undefined}
-              title={last ? "Il faut garder au moins une catégorie" : undefined}
-              onClick={() => toggle(o.id)}
-              className={[
-                "flex min-h-[44px] items-center gap-1.5 rounded-full border-[2.5px] border-ink py-1 pl-2 pr-3 text-[0.9rem] font-bold outline-none focus-visible:ring-4 focus-visible:ring-fluo-blue",
-                on ? "bg-fluo-green shadow-[2px_2px_0_0_var(--color-ink)]" : "bg-white text-ink/55",
-              ].join(" ")}
-            >
-              <span className={`grid h-[22px] w-[22px] flex-none place-items-center rounded-md border-2 border-ink ${on ? "bg-ink text-paper" : "bg-white"}`} aria-hidden>
-                {on ? <Icon name="check" size={14} strokeWidth={3.5} /> : null}
-              </span>
-              <Emoji id={o.emoji} size={20} />
-              {o.label}
-            </button>
-          );
-        })}
+        {main.map(chip)}
       </div>
+      {extra.length > 0 ? (
+        <>
+          <div className="mt-3 text-[0.86rem] font-bold leading-tight text-ink/70" data-testid="extra-formats-title">
+            Formats en plus {extraOn === 0 ? "(désactivés)" : `(${extraOn} sur ${extra.length})`}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Formats en plus">
+            {extra.map(chip)}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

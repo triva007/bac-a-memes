@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Emoji } from "@/components/ui/Emoji";
 import { PERSO_CATEGORY, PERSO_PREFIX, type RoomView } from "@/lib/game/types";
+import { buildPool } from "@/lib/game/deal";
 import { TEMPLATES, availableCategories } from "@/lib/templates";
 import { TemplateCard } from "./cards";
 import type { TimePressure } from "./hooks";
@@ -42,7 +43,16 @@ export function Library({ view, selectedId, onPick, onClose, clock }: LibraryPro
   const inHand = useMemo(() => new Set((hands ?? []).flat()), [hands]);
 
   const items = useMemo<Item[]>(() => {
-    const base: Item[] = TEMPLATES.map((t) => ({ id: t.id, name: t.name, category: t.category, search: norm(t.name) }));
+    // uniquement les catégories activées par l'hôte (même règle que le serveur)
+    const enabled = new Set(
+      buildPool(
+        TEMPLATES,
+        view.images.map((img) => PERSO_PREFIX + img.id),
+        view.settings.categories,
+        view.settings.handSize,
+      ).base.map((t) => t.id),
+    );
+    const base: Item[] = TEMPLATES.filter((t) => enabled.has(t.id)).map((t) => ({ id: t.id, name: t.name, category: t.category, search: norm(t.name) }));
     const perso: Item[] = view.images.map((img) => ({
       id: PERSO_PREFIX + img.id,
       name: `Image de ${img.byName}`,
@@ -50,7 +60,7 @@ export function Library({ view, selectedId, onPick, onClose, clock }: LibraryPro
       search: norm(`image perso ${img.byName}`),
     }));
     return [...base, ...perso];
-  }, [view.images]);
+  }, [view.images, view.settings.categories, view.settings.handSize]);
 
   const tabs = useMemo(() => {
     const present = new Set(items.map((i) => i.category));
