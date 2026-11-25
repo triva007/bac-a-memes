@@ -109,6 +109,12 @@ describe("SITUATIONS", () => {
     for (const tag of SITUATION_TAGS) expect(situationsWithTag(tag).length, tag).toBeGreaterThan(0);
   });
 
+  it("au moins 50 répliques cultes, chacune citée entre guillemets français", () => {
+    const cards = situationsWithTag("repliques");
+    expect(cards.length).toBeGreaterThanOrEqual(50);
+    for (const s of cards) expect(/« [^»]+ »/.test(s.text), `${s.id} : « ${s.text} »`).toBe(true);
+  });
+
   it("variété des amorces", () => {
     const starts = (re: RegExp) => SITUATIONS.filter((s) => re.test(s.text)).length;
     expect(starts(/^Quand /)).toBeGreaterThanOrEqual(40);

@@ -124,7 +124,7 @@ export const LIMITS = {
   disconnectAfterMs: 12_000,
   /** pack perso : images ajoutées par les joueurs */
   maxImages: 60,
-  maxImagesPerPlayer: 10,
+  maxImagesPerPlayer: 30,
   /** taille max d'une image une fois décodée (le client compresse avant envoi) */
   maxImageBytes: 350_000,
   /** une salle inactive est supprimée après ce délai */

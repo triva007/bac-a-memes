@@ -105,7 +105,7 @@ export async function roomExists(code: string): Promise<boolean> {
 }
 
 /** Réduit une image à ~1000 px de large et la compresse en JPEG sous la limite serveur. */
-async function compressImage(file: Blob): Promise<{ dataUrl: string; w: number; h: number }> {
+export async function compressImage(file: Blob): Promise<{ dataUrl: string; w: number; h: number }> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, 1000 / bitmap.width, 1400 / bitmap.height);
   const w = Math.max(50, Math.round(bitmap.width * scale));

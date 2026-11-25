@@ -62,8 +62,10 @@ describe("pack perso : ajout et suppression", () => {
     const sim = new Sim({ players: 8 });
     for (let i = 0; i < LIMITS.maxImagesPerPlayer; i++) expect(add(sim, "p1").out.ok).toBe(true);
     expect(add(sim, "p1").out).toMatchObject({ ok: false, error: "too_many_images" });
+    // les joueurs suivants remplissent la salle, chacun jusqu'à sa limite (quelles que soient les valeurs des limites)
     for (const id of ["p2", "p3", "p4", "p5", "p6"]) {
-      for (let i = 0; i < LIMITS.maxImagesPerPlayer; i++) expect(add(sim, id).out.ok).toBe(true);
+      const left = LIMITS.maxImages - sim.view(null).images.length;
+      for (let i = 0; i < Math.min(LIMITS.maxImagesPerPlayer, left); i++) expect(add(sim, id).out.ok).toBe(true);
     }
     expect(sim.view(null).images).toHaveLength(LIMITS.maxImages);
     expect(add(sim, "p7").out).toMatchObject({ ok: false, error: "too_many_images" });
