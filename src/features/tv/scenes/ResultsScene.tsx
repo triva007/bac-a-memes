@@ -70,7 +70,7 @@ function TopMemes({ entries, view }: { entries: MemeResult[]; view: RoomView }) 
   const winW = solo ? 1100 : 840;
   const sideW = (innerW - winW - 2 * 36) / 2;
   const winH = innerH - titleH - 150;
-  const sideH = Math.min(winH - 110, 560);
+  const sideH = Math.min(Math.round(winH * 0.72), 540);
   const color = (r: MemeResult) => view.players.find((p) => p.id === r.authorId)?.color ?? FLUO.blue;
 
   return (

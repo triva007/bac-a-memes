@@ -77,7 +77,7 @@ export function PersoRender({ url, height }: { url: string; height: number }) {
           draggable={false}
           decoding="async"
           loading={loading}
-          style={{ position: "absolute", left: -80, top: -80, width: 1160, height: height + 160, objectFit: "cover", filter: "blur(38px) brightness(0.5) saturate(1.25)", pointerEvents: "none" }}
+          style={{ position: "absolute", left: -80, top: -80, width: 1160, maxWidth: "none", height: height + 160, objectFit: "cover", filter: "blur(38px) brightness(0.5) saturate(1.25)", pointerEvents: "none" }}
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -86,7 +86,7 @@ export function PersoRender({ url, height }: { url: string; height: number }) {
           draggable={false}
           decoding="async"
           loading={loading}
-          style={{ position: "absolute", left: 0, top: 0, width: 1000, height, objectFit: "contain", pointerEvents: "none", userSelect: "none" }}
+          style={{ position: "absolute", left: 0, top: 0, width: 1000, maxWidth: "none", height, objectFit: "contain", pointerEvents: "none", userSelect: "none" }}
         />
       </div>
       <T id="haut" x={36} y={22} w={928} h={capH} font="meme" max={104} min={44} upper outline valign="top" />

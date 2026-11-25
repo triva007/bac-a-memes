@@ -55,6 +55,8 @@ export function Leaderboard({ rows, width, height, animated }: { rows: BoardRow[
   const rankW = Math.round(h * 0.95);
   const cardW = colW - rankW - 8;
   const avatarD = h - 10;
+  // la barre s'arrête avant la zone du score : le nombre reste toujours sur fond papier
+  const scoreW = Math.round(h * 1.5);
 
   return (
     <div style={{ position: "relative", width, height }} role="list" aria-label="Classement">
@@ -66,7 +68,7 @@ export function Leaderboard({ rows, width, height, animated }: { rows: BoardRow[
         const shown = stage === 0 ? r.prev : r.score;
         const delta = r.score - r.prev;
         const frac = Math.max(0, shown / max);
-        const barW = avatarD + 14 + frac * (cardW - avatarD - 22);
+        const barW = avatarD + 14 + frac * (cardW - avatarD - 26 - scoreW);
         return (
           <motion.div
             key={r.id}
@@ -121,7 +123,7 @@ export function Leaderboard({ rows, width, height, animated }: { rows: BoardRow[
                     +{delta}
                   </motion.div>
                 ) : null}
-                <div style={{ ...DISPLAY, flex: "none", minWidth: Math.round(h * 1.05), textAlign: "right", fontSize: Math.round(h * 0.56), lineHeight: 1 }}>
+                <div style={{ ...DISPLAY, flex: "none", minWidth: Math.round(h * 1.1), textAlign: "right", fontSize: Math.round(h * 0.56), lineHeight: 1 }}>
                   {animated ? <CountUp from={r.prev} to={shown} duration={1} /> : r.score}
                 </div>
               </div>

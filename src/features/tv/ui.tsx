@@ -53,7 +53,8 @@ export function Emo({ id, size, className, style }: { id: string; size: number; 
       width={size}
       height={size}
       draggable={false}
-      decoding="async"
+      // décodage synchrone : un avatar qui « tombe » sur le podium ne doit jamais apparaître vide
+      decoding="sync"
       className={className}
       style={{ width: size, height: size, flex: "none", objectFit: "contain", ...style }}
     />
