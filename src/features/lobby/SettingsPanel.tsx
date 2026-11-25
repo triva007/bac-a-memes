@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Emoji } from "@/components/ui/Emoji";
 import { Icon } from "@/components/ui/Icon";
 import { LIMITS, PERSO_CATEGORY, type GameMode, type RoomView, type Settings } from "@/lib/game/types";
-import { CATEGORIES } from "@/lib/templates/types";
+import { availableCategories } from "@/lib/templates";
 import { sfx } from "@/lib/sfx";
 import { SectionCard, Segmented, Stepper, Switch } from "./controls";
 import type { SettingsDraft } from "./useSettingsDraft";
@@ -65,7 +65,7 @@ interface CategoryOption {
 }
 
 function categoryOptions(hasImages: boolean): CategoryOption[] {
-  const list: CategoryOption[] = CATEGORIES.map((c) => ({ id: c.id, label: c.label, emoji: c.emoji }));
+  const list: CategoryOption[] = availableCategories().map((c) => ({ id: c.id, label: c.label, emoji: c.emoji }));
   if (hasImages) list.push({ id: PERSO_CATEGORY, label: "Pack perso", emoji: "camera" });
   return list;
 }

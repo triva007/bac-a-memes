@@ -23,8 +23,8 @@ function Render() {
       {/* le seul réveillé */}
       <Emo id="zany-face" x={332} y={232} size={340} />
 
-      <Bubble x={36} y={22} w={610} h={190} tail="bottom-right">
-        <T id="bulle" x={30} y={18} w={550} h={154} font="display" max={64} min={32} lh={1.08} />
+      <Bubble x={30} y={18} w={664} h={200} tail="bottom-right">
+        <T id="bulle" x={30} y={16} w={604} h={168} font="display" max={64} min={32} lh={1.08} />
       </Bubble>
 
       <Voile id="bas" y={580} h={180} force={0.5} />

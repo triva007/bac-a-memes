@@ -19,8 +19,8 @@ function Render() {
       <Emo id="clown-face" x={528} y={36} size={452} rotate={6} />
       <Vignette w={1000} h={700} strength={0.42} />
 
-      <Legende id="gauche" x={20} y={500} w={450} h={186} max={78} min={38} valign="bottom" />
-      <Legende id="droite" x={530} y={500} w={450} h={186} max={78} min={38} valign="bottom" />
+      <Legende id="gauche" x={16} y={500} w={404} h={186} max={78} min={38} valign="bottom" />
+      <Legende id="droite" x={486} y={500} w={498} h={186} max={78} min={38} valign="bottom" />
     </>
   );
 }

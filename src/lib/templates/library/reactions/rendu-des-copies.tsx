@@ -22,17 +22,17 @@ function Render() {
 
       {/* l'élève à sa table */}
       <Emo id="backpack" x={70} y={930} size={210} rotate={-8} shadow="ground" />
-      <Perso id="face-holding-back-tears" x={540} y={730} size={390} corps="#ff9a3d" corpsH={0.7} />
-      <SchoolDesk x={420} y={1056} w={640} />
+      <Perso id="face-holding-back-tears" x={540} y={712} size={390} corps="#ff9a3d" corpsH={0.7} />
+      <SchoolDesk x={420} y={1096} w={640} />
 
       {/* la copie tendue */}
-      <CopieDouble x={352} y={372} w={560} h={400} rotate={5} cell={44} margin={110}>
+      <CopieDouble x={352} y={350} w={560} h={400} rotate={5} cell={44} margin={110}>
         <RedCircle x={300} y={14} w={236} h={124} />
         <T id="note" x={316} y={26} w={204} h={100} font="hand" color={C.redPen} max={96} min={36} nowrap />
         <Underline x={130} y={170} w={150} />
-        <T id="appreciation" x={128} y={176} w={410} h={206} font="hand" color={C.redPen} max={70} min={34} align="left" valign="top" />
+        <T id="appreciation" x={128} y={176} w={410} h={206} font="hand" color={C.redPen} max={70} min={42} align="left" valign="top" />
       </CopieDouble>
-      <Emo id="pinching-hand" x={300} y={500} size={150} rotate={-30} flip />
+      <Emo id="pinching-hand" x={300} y={478} size={150} rotate={-30} flip />
 
       <Legende id="haut" y={12} h={150} max={80} />
     </>

@@ -17,6 +17,8 @@
 import type { ComponentType } from "react";
 
 export type CategoryId =
+  /** pack intégré : images déposées dans public/pack (légende haut / bas) */
+  | "memes"
   /** scènes de réaction (emojis expressifs dans un décor) */
   | "reactions"
   /** formats scolaires détournés : bulletin, copie, carnet, tableau... */
@@ -29,6 +31,7 @@ export type CategoryId =
   | "affiches";
 
 export const CATEGORIES: { id: CategoryId; label: string; emoji: string }[] = [
+  { id: "memes", label: "Mèmes connus", emoji: "fire" },
   { id: "reactions", label: "Réactions", emoji: "face-with-tears-of-joy" },
   { id: "ecole", label: "Au lycée", emoji: "school" },
   { id: "ecrans", label: "Écrans", emoji: "mobile-phone" },

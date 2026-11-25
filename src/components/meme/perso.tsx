@@ -8,6 +8,7 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { PERSO_PREFIX, type CustomImage } from "@/lib/game/types";
+import { persoCanvasHeight } from "@/lib/templates/caption";
 import { T, useMeme } from "./kit-core";
 
 interface PersoImagesValue {
@@ -37,11 +38,7 @@ export function isPersoTemplateId(templateId: string): boolean {
   return templateId.startsWith(PERSO_PREFIX);
 }
 
-/** Hauteur du canevas (largeur 1000) pour une image w × h : son ratio, borné entre 560 et 1400. */
-export function persoCanvasHeight(w: number, h: number): number {
-  if (!(w > 0) || !(h > 0)) return 1000;
-  return Math.max(560, Math.min(1400, Math.round((1000 * h) / w)));
-}
+export { persoCanvasHeight };
 
 export interface PersoImageInfo {
   id: string;
@@ -61,8 +58,11 @@ export function usePersoImage(templateId: string): PersoImageInfo | null {
   return { id, url, height: persoCanvasHeight(img.w, img.h) };
 }
 
-/** Rendu du gabarit perso : image entière (contain) sur elle-même floutée, légendes haut / bas. */
-export function PersoRender({ url, height }: { url: string; height: number }) {
+/**
+ * Rendu « image à légender » : image entière (contain) sur elle-même floutée,
+ * légendes haut / bas. Sert au pack perso ET au pack intégré (public/pack).
+ */
+export function CaptionRender({ url, height }: { url: string; height: number }) {
   const { mode } = useMeme();
   const loading = mode === "edit" ? "eager" : "lazy";
   const capH = Math.round(Math.min(300, height * 0.3));
@@ -94,3 +94,6 @@ export function PersoRender({ url, height }: { url: string; height: number }) {
     </>
   );
 }
+
+/** Alias historique de `CaptionRender`. */
+export const PersoRender = CaptionRender;

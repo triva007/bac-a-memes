@@ -96,6 +96,36 @@ export function Perso({ id, x, y, size, corps, corpsH = 0.7, corpsW = 1.08, sac,
               <div style={{ position: "absolute", right: "15%", top: 0, bottom: 0, width: "11%", background: sac, boxShadow: "inset 3px 0 0 rgba(10,8,30,0.2)" }} />
             </>
           ) : null}
+          {bh >= size && !cravate ? (
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "27%",
+                  right: "27%",
+                  top: Math.round(size * 0.62),
+                  height: Math.round(size * 0.24),
+                  borderRadius: `${Math.round(size * 0.1)}px ${Math.round(size * 0.1)}px ${Math.round(size * 0.04)}px ${Math.round(size * 0.04)}px`,
+                  background: "rgba(10,8,30,0.14)",
+                  boxShadow: "inset 0 3px 0 rgba(255,255,255,0.16)",
+                }}
+              />
+              {[0.44, 0.56].map((p) => (
+                <div
+                  key={p}
+                  style={{
+                    position: "absolute",
+                    left: `calc(${p * 100}% - ${Math.max(2, Math.round(size * 0.012))}px)`,
+                    top: Math.round(size * 0.14),
+                    width: Math.max(4, Math.round(size * 0.024)),
+                    height: Math.round(size * 0.22),
+                    borderRadius: 4,
+                    background: "rgba(255,255,255,0.6)",
+                  }}
+                />
+              ))}
+            </>
+          ) : null}
           {cravate ? (
             <>
               <div

@@ -13,7 +13,7 @@ import { MemeView } from "@/components/meme/MemeView";
 import { Emoji } from "@/components/ui/Emoji";
 import { MAX_STICKERS, type Meme, type RoomView, type Sticker } from "@/lib/game/types";
 import { sfx } from "@/lib/sfx";
-import { getMemeFields } from "@/lib/templates";
+import { getMemeFields, isCaptionTemplate } from "@/lib/templates";
 import type { TemplateField } from "@/lib/templates/types";
 import { isPersoTemplateId } from "@/components/meme/perso";
 import { SituationCard } from "./cards";
@@ -487,7 +487,7 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
                 onNext={onNext}
               />
             ))}
-            {perso && templateOk ? <p className="mt-1.5 px-0.5 text-[0.78rem] font-medium text-muted">Un seul des deux textes suffit.</p> : null}
+            {isCaptionTemplate(templateId) && templateOk ? <p className="mt-1.5 px-0.5 text-[0.78rem] font-medium text-muted">Un seul des deux textes suffit.</p> : null}
 
             {situations.length > 0 && fields.length > 0 ? (
               <section className="mt-4" aria-label="Idées de situations">

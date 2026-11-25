@@ -6,6 +6,9 @@ import { SITUATIONS, resolveSituation } from "@/lib/content/situations";
 import { pickOne, shuffle } from "./rng";
 import { PERSO_CATEGORY, PERSO_PREFIX, type TemplateMeta } from "./types";
 
+/** Catégorie du pack intégré (images de public/pack) : environ la moitié de chaque main. */
+export const PACK_CATEGORY = "memes";
+
 export interface Pool {
   /** gabarits du catalogue utilisables */
   base: TemplateMeta[];
@@ -60,6 +63,7 @@ export interface DealInput {
  *  3. éviter les gabarits déjà proposés à ce joueur (sinon, les plus anciens d'abord) ;
  *  4. étaler les catégories ; 5. hasard.
  * Avec un pack perso : environ un tiers de chaque main (au moins 1) est perso.
+ * Avec un pack intégré (catégorie "memes") : environ la moitié de chaque main en vient.
  */
 export function dealHands(input: DealInput): string[][] {
   const { pool, seen, rand } = input;
@@ -100,6 +104,32 @@ export function dealHands(input: DealInput): string[][] {
     }
     if (hand.length > 0) catCount.set(PERSO_CATEGORY, hand.length);
 
+    // --- part pack intégré : environ la moitié de la main
+    const packOrder = baseOrder.filter((t) => t.category === PACK_CATEGORY);
+    const otherCount = baseOrder.length - packOrder.length;
+    let wantPack = 0;
+    if (packOrder.length > 0 && otherCount > 0) {
+      wantPack = Math.min(Math.round(size / 2), packOrder.length, size - hand.length);
+    }
+    for (let n = 0; n < wantPack; n++) {
+      let best: TemplateMeta | null = null;
+      let bestKey: number[] = [];
+      for (let idx = 0; idx < packOrder.length; idx++) {
+        const t = packOrder[idx];
+        if (hand.includes(t.id)) continue;
+        const key = [usedInRound.has(t.id) ? 1 : 0, t.id in seen ? 1 : 0, seen[t.id] ?? 0, idx];
+        if (best === null || lexLess(key, bestKey)) {
+          best = t;
+          bestKey = key;
+        }
+      }
+      if (best === null) break;
+      hand.push(best.id);
+      catCount.set(PACK_CATEGORY, (catCount.get(PACK_CATEGORY) ?? 0) + 1);
+    }
+    /** le reste de la main vient des autres catégories tant qu'il en reste */
+    const packDone = wantPack > 0;
+
     // --- part catalogue
     const targetCategories = Math.min(3, size, baseCategories + (hand.length > 0 ? 1 : 0));
     while (hand.length < size) {
@@ -111,6 +141,7 @@ export function dealHands(input: DealInput): string[][] {
         if (hand.includes(t.id)) continue;
         const count = catCount.get(t.category) ?? 0;
         const key = [
+          packDone && t.category === PACK_CATEGORY ? 1 : 0,
           usedInRound.has(t.id) ? 1 : 0,
           needDiversity && count > 0 ? 1 : 0,
           t.id in seen ? 1 : 0,

@@ -53,8 +53,8 @@ function Render() {
         </Txt>
       </Paper>
 
-      <Bubble x={210} y={28} w={760} h={176} tail="bottom-left">
-        <T id="avis" x={30} y={16} w={700} h={144} font="display" max={62} min={32} lh={1.08} />
+      <Bubble x={296} y={22} w={676} h={200} tail="bottom-left">
+        <T id="avis" x={26} y={14} w={624} h={172} font="display" max={62} min={32} lh={1.08} />
       </Bubble>
     </>
   );

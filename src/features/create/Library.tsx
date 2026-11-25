@@ -6,8 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Emoji } from "@/components/ui/Emoji";
 import { PERSO_CATEGORY, PERSO_PREFIX, type RoomView } from "@/lib/game/types";
-import { TEMPLATES } from "@/lib/templates";
-import { CATEGORIES } from "@/lib/templates/types";
+import { TEMPLATES, availableCategories } from "@/lib/templates";
 import { TemplateCard } from "./cards";
 import type { TimePressure } from "./hooks";
 import { Icon, Marker } from "./ui";
@@ -56,7 +55,7 @@ export function Library({ view, selectedId, onPick, onClose, clock }: LibraryPro
   const tabs = useMemo(() => {
     const present = new Set(items.map((i) => i.category));
     const list: { id: string; label: string; emoji: string }[] = [{ id: "all", label: "Tout", emoji: "sparkles" }];
-    for (const c of CATEGORIES) if (present.has(c.id)) list.push(c);
+    for (const c of availableCategories()) if (present.has(c.id)) list.push(c);
     if (present.has(PERSO_CATEGORY)) list.push({ id: PERSO_CATEGORY, label: "Pack perso", emoji: "framed-picture" });
     return list;
   }, [items]);

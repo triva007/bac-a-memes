@@ -45,7 +45,7 @@ const template: MemeTemplate = {
   height: 1000,
   fields: [
     { id: "bulle", label: "Ce qu'il dit en arrivant", placeholder: "Attendez, pourquoi vous rigolez ?", maxLength: 70 },
-    { id: "bas", label: "Légende du bas", placeholder: "Personne lui dit que c'est lui, la blague", maxLength: 60, optional: true },
+    { id: "bas", label: "Légende du bas", placeholder: "Arrivé pile après la chute", maxLength: 60, optional: true },
   ],
   Render,
 };

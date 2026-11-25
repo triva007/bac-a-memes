@@ -12,7 +12,7 @@ function Render() {
 
       {/* l'élève, au premier plan */}
       <Perso id="anxious-face-with-sweat" x={556} y={700} size={410} corps="#5df2a0" corpsH={0.6} corpsW={1.14} />
-      <Emo id="sweat-droplets" x={484} y={690} size={140} flip rotate={-8} />
+      <Emo id="sweat-droplets" x={868} y={640} size={130} rotate={8} />
 
       <Bubble x={36} y={40} w={600} h={300} tail="bottom-right">
         <T id="question" x={34} y={24} w={532} h={252} font="display" max={70} min={34} lh={1.08} />
@@ -35,7 +35,7 @@ const template: MemeTemplate = {
   height: 1150,
   fields: [
     { id: "question", label: "Ce que dit le CPE", placeholder: "Tu m'expliques tes 14 retards en novembre ?", maxLength: 80 },
-    { id: "pensee", label: "Ce que pense l'élève", placeholder: "Reste calme, il sait rien pour la sonnerie", maxLength: 60, optional: true },
+    { id: "pensee", label: "Ce que pense l'élève", placeholder: "T'es cuit. T'es complètement cuit.", maxLength: 60, optional: true },
   ],
   Render,
 };

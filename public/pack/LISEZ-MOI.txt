@@ -1,0 +1,24 @@
+LE PACK DE MÈMES DU JEU
+=======================
+
+Chaque image posée dans ce dossier devient un mème à légender dans le jeu,
+pour tous les joueurs, dans la catégorie « Mèmes connus ».
+
+LES RÈGLES
+- Formats acceptés : jpg, jpeg, png, webp, gif (les GIF restent animés).
+- Le nom du fichier devient le nom affiché du mème.
+  Exemple : ah-denis.jpg  ->  « Ah denis »
+  (les tirets et les tirets bas deviennent des espaces)
+- 2 Mo maximum conseillé par image, sinon le jeu rame sur téléphone.
+- Ne renomme pas une image déjà en ligne pendant qu'une partie est en cours.
+
+AJOUTER DES IMAGES DEPUIS LE SITE GITHUB, EN 3 ÉTAPES
+1. Ouvre ce dossier (public/pack) sur la page GitHub du projet,
+   puis clique sur « Add file » > « Upload files ».
+2. Glisse tes images dans la zone, puis clique sur le bouton vert
+   « Commit changes ».
+3. Attends 1 à 2 minutes : le site se met à jour tout seul, et tes images
+   apparaissent dans le jeu.
+
+Pour retirer une image : clique dessus dans ce dossier, puis sur la
+corbeille (« Delete file »), et « Commit changes ».

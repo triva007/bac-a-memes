@@ -38,7 +38,6 @@ function Render() {
 
       {/* l'orateur, seul face à tout le monde */}
       <Perso id="flushed-face" x={300} y={452} size={400} corps="#ff5fa2" corpsH={1} corpsW={1.12} />
-      <Emo id="sweat-droplets" x={642} y={470} size={120} rotate={10} />
       <Emo id="page-facing-up" x={598} y={782} size={170} rotate={14} />
 
       <Legende id="haut" y={18} h={178} />

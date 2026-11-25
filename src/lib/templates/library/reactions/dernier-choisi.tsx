@@ -31,7 +31,7 @@ function Render() {
       <Perso id="pleading-face" x={372} y={226} size={256} corps="#f6f2e8" corpsH={1.06} sol />
       <Emo id="basketball" x={612} y={560} size={96} shadow="ground" />
 
-      <Etiquette id="nom" x={330} y={604} w={340} h={100} rotate={-2} />
+      <Etiquette id="nom" x={300} y={598} w={400} h={112} rotate={-2} />
       <Legende id="haut" y={12} h={176} max={84} />
     </>
   );

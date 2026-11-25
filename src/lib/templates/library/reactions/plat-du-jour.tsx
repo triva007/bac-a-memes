@@ -35,7 +35,7 @@ function Render() {
         <Txt x={0} y={9} w={366} align="center" size={36} font="display" color="#ffe94a" ls={0.08}>
           PLAT DU JOUR
         </Txt>
-        <T id="plat" x={18} y={66} w={330} h={150} font="hand2" color="#14132b" max={62} min={32} lh={1.04} />
+        <T id="plat" x={18} y={66} w={330} h={150} font="hand2" color="#14132b" max={78} min={32} lh={1.04} />
       </Paper>
       <Emo id="baguette-bread" x={560} y={828} size={170} rotate={-8} />
       <Emo id="green-apple" x={770} y={842} size={140} />
@@ -53,7 +53,7 @@ const template: MemeTemplate = {
   height: 1200,
   fields: [
     { id: "plat", label: "Le plat du jour", placeholder: "Poisson pané du lundi (on est jeudi)", maxLength: 50 },
-    { id: "bas", label: "Légende du bas", placeholder: "Et là t'as plus faim", maxLength: 60 },
+    { id: "bas", label: "Légende du bas", placeholder: "Le chef a pas cuisiné, là", maxLength: 60 },
   ],
   Render,
 };
