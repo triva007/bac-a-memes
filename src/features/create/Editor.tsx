@@ -412,7 +412,8 @@ export function Editor({ view, templateId, templateOk, usedJoker, values, sticke
   };
 
   const nameWanted = activeField?.kind === "name";
-  const situations = create?.situations ?? [];
+  // cartes d'inspiration masquées à la demande de l'utilisateur
+  const situations: string[] = [];
   const submitLabel = busy ? "Envoi…" : "Valider mon mème";
   const perso = isPersoTemplateId(templateId);
 

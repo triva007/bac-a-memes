@@ -34,7 +34,8 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
   const canGoNext = handIndex < lastHand;
   const isReroll = handIndex >= revealed;
   const jokersLeft = view.me?.jokersLeft ?? 0;
-  const situations = create?.situations ?? [];
+  // cartes d'inspiration masquées à la demande de l'utilisateur
+  const situations: string[] = [];
 
   const next = () => {
     if (!canGoNext) return;
@@ -76,7 +77,7 @@ export function Picker({ view, handIndex, revealed, onHand, selectedId, onPick, 
       </header>
 
       {/* téléphone : une colonne qui défile (grille puis idées) ; grand écran en paysage : idées dans une colonne à droite */}
-      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5 pt-1 md:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_16.5rem] lg:items-start lg:gap-x-7">
+      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5 pt-1 md:px-6">
         <div className="min-w-0">
           {create?.theme ? <ThemeBanner theme={create.theme} style={{ marginBottom: 12, rotate: "-0.6deg" }} /> : null}
 
